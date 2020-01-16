@@ -122,6 +122,8 @@ return [
         'Magento_CatalogWidget' => 1,
         'Magento_Wishlist' => 1,
         'Magento_WishlistAnalytics' => 1,
+        'simplifiedMagento_DataBaseR' => 1,
+        'simplifiedMagento_firstModule' => 1,
         'Amazon_Core' => 1,
         'Amazon_Login' => 1,
         'Amazon_Payment' => 1,
@@ -131,6 +133,7 @@ return [
         'Klarna_Kp' => 1,
         'Magento_PaypalReCaptcha' => 1,
         'Temando_Shipping' => 1,
-        'Vertex_Tax' => 1
+        'Vertex_Tax' => 1,
+        'prueba' => 1
     ]
 ];
