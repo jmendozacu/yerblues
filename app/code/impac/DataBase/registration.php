@@ -6,4 +6,4 @@
 
 use \Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(ComponentRegistrar::MODULE, 'simplifiedMagento_DataBaseR', __DIR__);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'DataBaseAlpha3', __DIR__);
