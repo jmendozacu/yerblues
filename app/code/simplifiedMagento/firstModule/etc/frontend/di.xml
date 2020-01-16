@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="simplifiedMagento\firstModule\api\pencilInterface" type="simplifiedMagento\firstModule\Model\Pencil" />
+    <preference for="simplifiedMagento\firstModule\api\Color" type="simplifiedMagento\firstModule\Model\amarillo" />
+    <preference for="simplifiedMagento\firstModule\api\Size" type="simplifiedMagento\firstModule\Model\grande" />
+    <preference for="simplifiedMagento\firstModule\api\brillo" type="simplifiedMagento\firstModule\Model\alto" />
+
+    <type name="Magento\Catalog\Model\Product">
+        <plugin name="beforeSetName"
+                type="simplifiedMagento\firstModule\plugin\pluginSolution" sortOrder="10"/>
+    </type>
+
+    <virtualType name="virtualType" type="simplifiedMagento\firstModule\Model\amarillo">
+        <arguments>
+            <argument name="brillo" xsi:type="object">simplifiedMagento\firstModule\Model\alto</argument>
+        </arguments>
+    </virtualType>
+    <type name="simplifiedMagento\firstModule\Model\Pencil">
+        <arguments>
+            <argument name="color" xsi:type="object">virtualType</argument>
+        </arguments>
+    </type>
+    <type name="simplifiedMagento\firstModule\Model\student">
+        <arguments>
+            <argument name="age" xsi:type="number">98</argument>
+            <argument name="notas" xsi:type="array">
+                <item name="uwu" xsi:type="number">8</item>
+                <item name="ewe" xsi:type="number">1</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
