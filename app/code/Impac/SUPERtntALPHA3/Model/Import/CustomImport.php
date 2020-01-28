@@ -158,7 +158,7 @@ class CustomImport extends \Magento\ImportExport\Model\Import\Entity\AbstractEnt
 
     protected function saveEntityFinish(array $entityData, $table) {
         if ($entityData) {
-            $tableName = 'oficinaTnt';//$this->_connection->getTableName($table);
+            $tableName = $this->_connection->getTableName($table);
             $entityIn = [];
             foreach ($entityData as $id => $entityRows) {
                     foreach ($entityRows as $row) {
@@ -182,8 +182,8 @@ class CustomImport extends \Magento\ImportExport\Model\Import\Entity\AbstractEnt
         if ($table && $ids) {
             try {
                 $this->countItemsDeleted += $this->_connection->delete(
-                    'oficinaTnt',//$this->_connection->getTableName($table),
-                    $this->_connection->quoteInto('entity_id IN (?)', $ids)
+                    $this->_connection->getTableName($table),
+                    $this->_connection->quoteInto('idOficina IN (?)', $ids)
                 );
                 return true;
             } catch (\Exception $e) {

@@ -27,4 +27,11 @@
 			</argument>
 		</arguments>
 	</type>
+	<type name="Magento\ImportExport\Model\Import\prueba">
+		<arguments>
+			<argument name="samples" xsi:type="array">
+				<item name="learning" xsi:type="string">OrangeCompany_Learning</item>
+			</argument>
+		</arguments>
+	</type>
 </config>
