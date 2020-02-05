@@ -3,15 +3,15 @@
 namespace Impac\SUPERtntALPHA3\Block;
 
 use Magento\Framework\View\Element\Template\Context;
-use Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3Factory;
+use Impac\SUPERtntALPHA3\Model\ValoresFactory;
 use Magento\Cms\Model\Template\FilterProvider;
 
-class SUPERtntALPHA3View extends \Magento\Framework\View\Element\Template
+class ValoresView extends \Magento\Framework\View\Element\Template
 {
     protected $_supertntalpha3;
     public function __construct(
         Context $context,
-        SUPERtntALPHA3Factory $supertntalpha3,
+        ValoresFactory $supertntalpha3,
         FilterProvider $filterProvider
     ) {
         $this->_supertntalpha3 = $supertntalpha3;
@@ -21,7 +21,7 @@ class SUPERtntALPHA3View extends \Magento\Framework\View\Element\Template
 
     public function _prepareLayout()
     {
-        $this->pageConfig->getTitle()->set(__('Oficinas TNT'));
+        $this->pageConfig->getTitle()->set(__('Valores Despacho Oficinas TNT'));
         
         return parent::_prepareLayout();
     }

@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Items;
+namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores;
 
-class NewAction extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
+class NewAction extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores
 {
 
     public function execute()

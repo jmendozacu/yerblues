@@ -1,7 +1,7 @@
 <?php
-namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Items;
+namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores;
 
-class Delete extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
+class Delete extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores
 {
 
     public function execute()
@@ -9,7 +9,7 @@ class Delete extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
         $id = $this->getRequest()->getParam('id');
         if ($id) {
             try {
-                $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3');
+                $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\Valores');
                 $model->load($id);
                 $model->delete();
                 $this->messageManager->addSuccess(__('Eliminaste un Item.'));
@@ -22,11 +22,11 @@ class Delete extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
                     __('We can\'t delete item right now. Please review the log and try again.')
                 );
                 $this->_objectManager->get('Psr\Log\LoggerInterface')->critical($e);
-                $this->_redirect('impac_supertntalpha3/*/edit', ['id' => $this->getRequest()->getParam('id')]);
+                $this->_redirect('impac_supertntalpha3/*/valores', ['id' => $this->getRequest()->getParam('id')]);
                 return;
             }
         }
-        $this->messageManager->addError(__('We can\'t find a item to delete.'));
+        $this->messageManager->addError(__('No se encontró el ítem a eliminar.'));
         $this->_redirect('impac_supertntalpha3/*/');
     }
 }

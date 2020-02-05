@@ -12,14 +12,14 @@ use Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregatorI
 use Magento\ImportExport\Model\ResourceModel\Helper;
 use Magento\ImportExport\Model\ResourceModel\Import\Data;
 
-class Courses extends AbstractEntity{
-    const ENTITY_CODE = 'learning';
-    const TABLE = 'oficinatnt';
+class costoOficina extends AbstractEntity{
+    const ENTITY_CODE = 'costooficinas';
+    const TABLE = 'valoresoficina';
     const ENTITY_ID_COLUMN = 'idoficina';
     protected $needColumnCheck = true;
     protected $logInHistory = true;
     protected $_permanentAttributes = ['idoficina'];
-    protected $validColumnNames = ['idoficina','nombreoficina','direccion','telefono'];
+    protected $validColumnNames = ['idoficina','pesomaximo','costoa','costob'];
     protected $connection;
     private $resource;
 
@@ -44,20 +44,17 @@ class Courses extends AbstractEntity{
 
     public function validateRow(array $rowData,$rowNum): bool{
         $idOficina = (int) $rowData['idoficina'] ?? 0;
-        $nombreOficina = $rowData['nombreoficina'] ?? '';
-        $Direccion = $rowData['direccion'] ?? '';
-        $telefono = $rowData['telefono'] ?? '';
+        $pesoMaximo = $rowData['pesomaximo'] ?? '';
+        $costoA = $rowData['costoa'] ?? '';
+        $costoB =    $rowData['costob'] ?? '';
         if (!$idOficina) {
             $this->addRowError('idOficinaIsRequired', $rowNum);
         }
-        if (!$nombreOficina) {
-            $this->addRowError('nombreOficinaIsRequired', $rowNum);
+        if (!$pesoMaximo) {
+            $this->addRowError('pesoMaximoIsRequired', $rowNum);
         }
-        if (!$Direccion) {
-            $this->addRowError('DireccionIsRequired', $rowNum);
-        }
-        if (!$telefono) {
-            $this->addRowError('telefonoIsRequired', $rowNum);
+        if (!$costoA && !$costoB) {
+            $this->addRowError('costoA&costoBIsRequired', $rowNum);
         }
         if (isset($this->_validatedRows[$rowNum])) {
             return !$this->getErrorAggregator()->isRowInvalid($rowNum);
@@ -182,16 +179,12 @@ class Courses extends AbstractEntity{
             __('The idOficina cannot be empty.')
         );
         $this->addMessageTemplate(
-            'DireccionIsRequired',
-            __('Direccion should be greater than 0.')
+            'pesoMaximoIsRequired',
+            __('Peso Maximo should be greater than 0.')
         );
         $this->addMessageTemplate(
-            'nombreOficinaIsRequired',
-            __('nombreOficina should be greater than 0.')
-        );
-        $this->addMessageTemplate(
-            'telefonoIsRequired',
-            __('telefono should be greater than 0.')
-        );
+            'costoA&costoBIsRequired',
+            __('Costo A or Costo B should be greater than 0.')
+        );;
     }
 }

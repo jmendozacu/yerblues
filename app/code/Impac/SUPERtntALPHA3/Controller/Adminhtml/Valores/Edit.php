@@ -1,15 +1,15 @@
 <?php
 
-namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Items;
+namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores;
 
-class Edit extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
+class Edit extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores
 {
 
     public function execute()
     {
         $id = $this->getRequest()->getParam('id');
         
-        $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3');
+        $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\Valores');
 
         if ($id) {
             $model->load($id);

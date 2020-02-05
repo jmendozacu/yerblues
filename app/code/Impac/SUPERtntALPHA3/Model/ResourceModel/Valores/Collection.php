@@ -1,6 +1,6 @@
 <?php
 
-namespace Impac\SUPERtntALPHA3\Model\ResourceModel\SUPERtntALPHA3;
+namespace Impac\SUPERtntALPHA3\Model\ResourceModel\Valores;
  
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
@@ -8,8 +8,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     protected function _construct()
     {
         $this->_init(
-            'Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3',
-            'Impac\SUPERtntALPHA3\Model\ResourceModel\SUPERtntALPHA3'
+            'Impac\SUPERtntALPHA3\Model\Valores',
+            'Impac\SUPERtntALPHA3\Model\ResourceModel\Valores'
         );
     }
 }

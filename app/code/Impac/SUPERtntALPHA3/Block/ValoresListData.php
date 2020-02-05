@@ -2,14 +2,14 @@
 namespace Impac\SUPERtntALPHA3\Block;
 
 use Magento\Framework\View\Element\Template\Context;
-use Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3Factory;
+use Impac\SUPERtntALPHA3\Model\ValoresFactory;
 
-class SUPERtntALPHA3ListData extends \Magento\Framework\View\Element\Template
+class ValoresListData extends \Magento\Framework\View\Element\Template
 {
     protected $_supertntalpha3;
     public function __construct(
         Context $context,
-        SUPERtntALPHA3Factory $supertntalpha3
+        ValoresFactory $supertntalpha3
     ) {
         $this->_supertntalpha3 = $supertntalpha3;
         parent::__construct($context);
@@ -17,22 +17,22 @@ class SUPERtntALPHA3ListData extends \Magento\Framework\View\Element\Template
 
     public function _prepareLayout()
     {
-        $this->pageConfig->getTitle()->set(__('Oficinas TNT'));
+        $this->pageConfig->getTitle()->set(__('Valores Despacho a Oficinas TNT'));
         
         if ($this->getSUPERtntALPHA3Collection()) {
             $pager = $this->getLayout()->createBlock(
                 'Magento\Theme\Block\Html\Pager',
-                'impac.supertntalpha3.pager'
+                'impac.valores.pager'
             )->setAvailableLimit(array(5=>5,10=>10,15=>15))->setShowPerPage(true)->setCollection(
                 $this->getSUPERtntALPHA3Collection()
             );
             $this->setChild('pager', $pager);
-            $this->getSUPERtntALPHA3Collection()->load();
+            $this->getValoresCollection()->load();
         }
         return parent::_prepareLayout();
     }
 
-    public function getSUPERtntALPHA3Collection()
+    public function getValoresCollection()
     {
         $page = ($this->getRequest()->getParam('p'))? $this->getRequest()->getParam('p') : 1;
         $pageSize = ($this->getRequest()->getParam('limit'))? $this->getRequest()->getParam('limit') : 5;

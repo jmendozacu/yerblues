@@ -1,6 +1,6 @@
 <?php
 
-namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Items;
+namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores;
 
 class InlineEdit extends \Magento\Backend\App\Action
 {
@@ -29,7 +29,7 @@ class InlineEdit extends \Magento\Backend\App\Action
             } else {
                 foreach (array_keys($postItems) as $modelid) {
                     /** @var \Magento\Cms\Model\Block $block */
-                    $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3')->load($modelid);
+                    $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\Valores')->load($modelid);
                     try {
                         $model->setData(array_merge($model->getData(), $postItems[$modelid]));
                         $model->save();

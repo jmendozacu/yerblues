@@ -1,7 +1,7 @@
 <?php
 namespace Impac\SUPERtntALPHA3\Block\Adminhtml;
 
-class Items extends \Magento\Backend\Block\Widget\Grid\Container
+class Valores extends \Magento\Backend\Block\Widget\Grid\Container
 {
     protected function _construct()
     {

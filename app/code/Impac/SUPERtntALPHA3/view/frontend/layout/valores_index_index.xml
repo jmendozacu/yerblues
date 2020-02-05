@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Impac\SUPERtntALPHA3\Block\SUPERtntALPHA3" name="supertntalpha3.list" template="supertntalpha3.phtml">
+            <block class="Impac\SUPERtntALPHA3\Block\Valores" name="valores.list" template="valores.phtml">
             </block>
         </referenceContainer>
     </body>

@@ -1,14 +1,14 @@
 <?php
 
-namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Items;
+namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores;
 
-class Save extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
+class Save extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores
 {
     public function execute()
     {
         if ($this->getRequest()->getPostValue()) {
             try {
-                $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\SUPERtntALPHA3');
+                $model = $this->_objectManager->create('Impac\SUPERtntALPHA3\Model\Valores');
                 $data = $this->getRequest()->getPostValue();
                 $inputFilter = new \Zend_Filter_Input(
                     [],
@@ -39,7 +39,7 @@ class Save extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
                 $this->messageManager->addError($e->getMessage());
                 $id = (int)$this->getRequest()->getParam('id');
                 if (!empty($id)) {
-                    $this->_redirect('impac_supertntalpha3/*/edit', ['id' => $id]);
+                    $this->_redirect('impac_supertntalpha3/*/valores', ['id' => $id]);
                 } else {
                     $this->_redirect('impac_supertntalpha3/*/new');
                 }
@@ -50,7 +50,7 @@ class Save extends \Impac\SUPERtntALPHA3\Controller\Adminhtml\Items
                 );
                 $this->_objectManager->get('Psr\Log\LoggerInterface')->critical($e);
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setPageData($data);
-                $this->_redirect('impac_supertntalpha3/*/edit', ['id' => $this->getRequest()->getParam('id')]);
+                $this->_redirect('impac_supertntalpha3/*/valores', ['id' => $this->getRequest()->getParam('id')]);
                 return;
             }
         }

@@ -2,9 +2,9 @@
 
 namespace Impac\SUPERtntALPHA3\Ui\Component\Listing\Column;
 
-class SUPERtntALPHA3Actions extends \Magento\Ui\Component\Listing\Columns\Column
+class ValoresActions extends \Magento\Ui\Component\Listing\Columns\Column
 {
-    const URL_PATH_EDIT = 'impac_supertntalpha3/items/edit';
+    const URL_PATH_EDIT = 'impac_supertntalpha3/valores/edit';
     protected $_urlBuilder;
 
     public function __construct(

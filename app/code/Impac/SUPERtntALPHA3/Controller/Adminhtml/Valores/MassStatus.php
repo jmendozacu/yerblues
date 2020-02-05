@@ -1,12 +1,12 @@
 <?php
 
-namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Items;
+namespace Impac\SUPERtntALPHA3\Controller\Adminhtml\Valores;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
-use Impac\SUPERtntALPHA3\Model\ResourceModel\SUPERtntALPHA3\CollectionFactory;
+use Impac\SUPERtntALPHA3\Model\ResourceModel\Valores\CollectionFactory;
 
 class MassStatus extends \Magento\Backend\App\Action
 {
