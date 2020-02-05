@@ -5,6 +5,7 @@
  */
 declare(strict_types=1);
 
+// phpcs:ignore Magento2.Security.IncludeFile
 require __DIR__ . '/product_attribute.php';
 /** @var $attributeRepository \Magento\Catalog\Model\Product\Attribute\Repository */
 $attributeRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()

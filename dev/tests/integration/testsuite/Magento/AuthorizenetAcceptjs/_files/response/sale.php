@@ -22,26 +22,26 @@ return [
         'messages' => [
             [
                 'code' => '1',
-                'description' => 'This transaction has been approved.',
-            ],
+                'description' => 'This transaction has been approved.'
+            ]
         ],
         'userFields' => [
             [
                 'name' => 'transactionType',
-                'value' => 'authCaptureTransaction',
-            ],
+                'value' => 'authCaptureTransaction'
+            ]
         ],
-        'transHashSha2' => '3FA1733C95FD40BE865D1E09A0F8E9947EF8B00FDD64098B7C524DA23EE8ADA1043E'
-            . 'CE5BB8DF8E706E46503DF5AB6A6A2AB10DC2FF0DFD3EA8DD6EA9DD84CEBF',
-        'SupplementalDataQualificationIndicator' => 0,
+        'transHashSha2' => 'CD1E57FB1B5C876FDBD536CB16F8BBBA687580EDD78DD881C7F14DC4467C32BF6C'
+            . '808620FBD59E5977DF19460B98CCFC0DA0D90755992C0D611CABB8E2BA52B0',
+        'SupplementalDataQualificationIndicator' => 0
     ],
     'messages' => [
         'resultCode' => 'Ok',
         'message' => [
             [
                 'code' => 'I00001',
-                'text' => 'Successful.',
-            ],
-        ],
-    ],
+                'text' => 'Successful.'
+            ]
+        ]
+    ]
 ];

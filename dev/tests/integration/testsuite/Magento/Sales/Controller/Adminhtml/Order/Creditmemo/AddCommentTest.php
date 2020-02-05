@@ -27,7 +27,7 @@ class AddCommentTest extends AbstractCreditmemoControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnAddCreditmemoComment()
+    public function testSendEmailOnAddCreditmemoComment(): void
     {
         $comment = 'Test Credit Memo Comment';
         $order = $this->prepareRequest(

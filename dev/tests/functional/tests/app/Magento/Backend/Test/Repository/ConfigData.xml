@@ -174,7 +174,7 @@
                 <item name="value" xsi:type="number">0</item>
             </field>
         </dataset>
-
+        
         <dataset name="minify_js_files">
             <field name="dev/js/minify_files" xsi:type="array">
                 <item name="scope" xsi:type="string">default</item>

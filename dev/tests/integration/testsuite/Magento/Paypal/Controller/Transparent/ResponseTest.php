@@ -15,12 +15,11 @@ use Magento\Framework\Session\Generic as GenericSession;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\PaymentMethodManagementInterface;
-use Magento\TestFramework\TestCase\AbstractController;
 
 /**
  * Tests PayPal transparent response controller.
  */
-class ResponseTest extends AbstractController
+class ResponseTest extends \Magento\TestFramework\TestCase\AbstractController
 {
     /**
      * Tests setting credit card expiration month and year to payment from PayPal response.
@@ -58,7 +57,7 @@ class ResponseTest extends AbstractController
 
         $quote = $this->getQuote($reservedOrderId);
         $this->getRequest()->setPostValue($postData);
-
+        $this->getRequest()->setMethod('POST');
         /** @var Session $checkoutSession */
         $checkoutSession = $this->_objectManager->get(GenericSession::class);
         $checkoutSession->setQuoteId($quote->getId());
@@ -100,7 +99,7 @@ class ResponseTest extends AbstractController
      *
      * @param string $date
      */
-    private function setCurrentDateTime(string $dateTime)
+    private function setCurrentDateTime(string $dateTime): void
     {
         $dateTime = new \DateTime($dateTime, new \DateTimeZone('UTC'));
         $dateTimeFactory = $this->getMockBuilder(DateTimeFactory::class)

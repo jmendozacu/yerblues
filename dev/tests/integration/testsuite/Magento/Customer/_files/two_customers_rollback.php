@@ -1,5 +1,7 @@
 <?php
 /**
+ * Fixture for Customer List method.
+ *
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
@@ -19,10 +21,11 @@ $registry->register('isSecureArea', true);
 /** @var CustomerRepositoryInterface $customerRepository */
 $customerRepository = Bootstrap::getObjectManager()->get(CustomerRepositoryInterface::class);
 try {
-    $customer = $customerRepository->get('customer_two@example.com');
-    $customerRepository->delete($customer);
+    $customerRepository->deleteById(2);
 } catch (NoSuchEntityException $e) {
-    /** Tests which are wrapped with MySQL transaction clear all data by transaction rollback. */
+    /**
+     * Tests which are wrapped with MySQL transaction clear all data by transaction rollback.
+     */
 }
 
 $registry->unregister('isSecureArea');

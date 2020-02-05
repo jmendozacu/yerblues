@@ -27,7 +27,7 @@ class LiveCodeTest extends TestCase
      *
      * @return void
      */
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$reportDir = BP . '/dev/tests/static/report';
         if (!is_dir(self::$reportDir)) {
@@ -40,7 +40,7 @@ class LiveCodeTest extends TestCase
      *
      * @return void
      */
-    public function testCodeStyle()
+    public function testCodeStyle(): void
     {
         $reportFile = self::$reportDir . '/html_report.txt';
         $wrapper = new CodeSniffer\HtmlWrapper();

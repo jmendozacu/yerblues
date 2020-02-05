@@ -24,7 +24,7 @@ class CloseTransactionHandlerTest extends AbstractTest
      *
      * @return void
      */
-    public function testTransactionCloseStatus()
+    public function testTransactionCloseStatus(): void
     {
         $commandPool = $this->objectManager->get('AuthorizenetAcceptjsCommandPool');
         $command = $commandPool->get('settle');

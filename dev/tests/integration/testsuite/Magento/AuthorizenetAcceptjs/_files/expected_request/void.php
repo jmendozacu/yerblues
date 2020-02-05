@@ -16,5 +16,5 @@ return [
             'transactionType' => 'voidTransaction',
             'refTransId' => '1234',
         ],
-    ],
+    ]
 ];

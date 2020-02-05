@@ -12,9 +12,6 @@ use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 
-/**
- * Test Accept command.
- */
 class AcceptFdsCommandTest extends AbstractTest
 {
     /**
@@ -23,8 +20,6 @@ class AcceptFdsCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testAcceptFdsCommand()
     {

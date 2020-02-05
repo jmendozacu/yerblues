@@ -34,6 +34,11 @@ class CreateTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
      */
     protected $productRepository;
 
+    /**
+     * @inheritDoc
+     *
+     * @throws \Magento\Framework\Exception\AuthenticationException
+     */
     protected function setUp()
     {
         parent::setUp();
@@ -41,13 +46,16 @@ class CreateTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
             ->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
     }
 
+    /**
+     * Test LoadBlock being dispatched.
+     */
     public function testLoadBlockAction()
     {
         $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->getRequest()->setParam('block', ',');
         $this->getRequest()->setParam('json', 1);
         $this->dispatch('backend/sales/order_create/loadBlock');
-        $this->assertEquals('{"message":""}', $this->getResponse()->getBody());
+        $this->assertContains('"message":""}', $this->getResponse()->getBody());
     }
 
     /**
@@ -98,27 +106,18 @@ class CreateTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
             ScopeInterface::SCOPE_STORE,
             $store->getCode()
         );
+
         $website = $this->getWebsite('test');
         $customer = $this->getCustomer('customer.web@example.com', (int)$website->getId());
         $quote = $this->getQuoteById('0000032134');
         $session = $this->_objectManager->get(SessionQuote::class);
         $session->setQuoteId($quote->getId());
 
-        $data = [
-            'firstname' => 'John',
-            'lastname' => 'Doe',
-            'street' => ['Soborna 23'],
-            'city' => 'Testcity',
-            'country_id' => 'US',
-            'region' => 'Alabama',
-            'region_id' => 1
-        ];
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->getRequest()->setPostValue(
             [
-                'order' => ['billing_address' => $data],
-                'reset_shipping' => 1,
-                'collect_shipping_rates' => 1,
                 'customer_id' => $customer->getId(),
+                'collect_shipping_rates' => 1,
                 'store_id' => $store->getId(),
                 'json' => true
             ]
@@ -132,6 +131,9 @@ class CreateTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
 
     /**
      * Tests LoadBlock actions.
+     *
+     * @param string $block Block name.
+     * @param string $expected Contains HTML.
      *
      * @dataProvider loadBlockActionsDataProvider
      */
@@ -300,6 +302,11 @@ class CreateTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
         $this->assertContains(sprintf('"productId":"%s"', $product->getEntityId()), $body);
     }
 
+    /**
+     * Test not allowing to save.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function testDeniedSaveAction()
     {
         $this->_objectManager->configure(
@@ -349,6 +356,7 @@ class CreateTest extends \Magento\TestFramework\TestCase\AbstractBackendControll
             'region' => 'Kyivska',
             'region_id' => 1
         ];
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->getRequest()->setPostValue(
             [
                 'order' => ['billing_address' => $data],

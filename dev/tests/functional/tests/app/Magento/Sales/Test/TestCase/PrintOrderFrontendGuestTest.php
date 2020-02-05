@@ -36,18 +36,18 @@ class PrintOrderFrontendGuestTest extends Scenario
     /* end tags */
 
     /**
-     * DomainWhitelist CLI
-     *
-     * @var EnvWhitelist
-     */
-    private $envWhitelist;
-
-    /**
      * Browser.
      *
      * @var BrowserInterface
      */
     protected $browser;
+
+    /**
+     * DomainWhitelist CLI
+     *
+     * @var EnvWhitelist
+     */
+    private $envWhitelist;
 
     /**
      * Prepare data.

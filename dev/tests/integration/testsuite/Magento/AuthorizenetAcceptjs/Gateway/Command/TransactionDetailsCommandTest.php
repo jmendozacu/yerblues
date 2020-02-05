@@ -11,9 +11,6 @@ namespace Magento\AuthorizenetAcceptjs\Gateway\Command;
 use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 
-/**
- * Test Transaction Details command.
- */
 class TransactionDetailsCommandTest extends AbstractTest
 {
     /**
@@ -22,8 +19,6 @@ class TransactionDetailsCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_captured.php
-     *
-     * @return void
      */
     public function testTransactionDetails()
     {
@@ -45,7 +40,7 @@ class TransactionDetailsCommandTest extends AbstractTest
             ->willReturn(json_encode($response));
 
         $result = $command->execute([
-            'payment' => $paymentDO,
+            'payment' => $paymentDO
         ]);
 
         $resultData = $result->get();

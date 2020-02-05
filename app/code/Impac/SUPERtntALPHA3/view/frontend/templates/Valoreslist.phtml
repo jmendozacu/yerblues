@@ -1,0 +1,41 @@
+
+<?php
+    $collection = $block->getSUPERtntALPHA3Collection();
+    if($collection->count() > 0):
+     if ($block->getPagerHtml()): ?>
+        <div class="order-products-toolbar toolbar bottom"><?php echo $block->getPagerHtml(); ?></div>
+    <?php endif ?>
+    <table class="data table" id="supertntalpha3-data-table">
+        <caption class="table-caption">Impac SUPERtntALPHA3 Data</caption>
+        <thead>
+            <tr>
+                <th scope="col" class="col idOficina">idOficina</th>
+                <th scope="col" class="col nombreOficina">nombreOficina</th>
+                <th scope="col" class="col image">Direccion</th>
+                <th scope="col" class="col created_at">Telefono</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($collection as $key => $data): ?>
+                <tr>
+                    <td data-th="idOficina" class="col idOficina"><?php echo $data->getId(); ?></td>
+                    <td data-th="nombreOficina" class="col nombreOficina"><?php echo $data->getNombreOficina(); ?></td>
+                    <td data-th="Direccion" class="col Direccion"><?php echo $data->getDireccion(); ?></td>
+                    <td data-th="telefono" class="col telefono"><?php echo $data->getTelefono(); ?></td>
+                    <td data-th="Actions" class="col actions">
+                        <?php $id = ($data->getId()) ? $data->getId() : $data['idOficina']; ?>
+                        <!-- "$data->getTesting13Id()" was not working when I generated Vky_Testing13 module. That's why I had to place above line. -->
+                        <a href="<?php echo $block->getBaseUrl().'supertntalpha3/index/view/id/'.$id; ?>" class="action view">
+                            <span>View</span>
+                        </a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php if ($block->getPagerHtml()): ?>
+        <div class="order-products-toolbar toolbar bottom"><?php echo $block->getPagerHtml(); ?></div>
+    <?php endif ?>
+<?php else: ?>
+    <h2>We couldn't find any records</h2>
+<?php endif; ?>

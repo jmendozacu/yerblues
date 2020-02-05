@@ -27,7 +27,7 @@ class AddCommentTest extends AbstractInvoiceControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnAddInvoiceComment()
+    public function testSendEmailOnAddInvoiceComment(): void
     {
         $comment = 'Test Invoice Comment';
         $order = $this->prepareRequest(

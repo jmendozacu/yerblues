@@ -43,7 +43,7 @@ class ConfigurableTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->storeManager = Bootstrap::getObjectManager()->get(StoreManagerInterface::class);
         $this->productRepository = Bootstrap::getObjectManager()->get(ProductRepositoryInterface::class);
@@ -62,7 +62,7 @@ class ConfigurableTest extends TestCase
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\StateException
      */
-    public function testGetProductFinalPriceIfOneOfChildIsDisabled()
+    public function testGetProductFinalPriceIfOneOfChildIsDisabled(): void
     {
         $configurableProduct = $this->getConfigurableProductFromCollection();
         $this->assertEquals(10, $configurableProduct->getMinimalPrice());
@@ -91,12 +91,12 @@ class ConfigurableTest extends TestCase
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\StateException
      */
-    public function testGetProductFinalPriceIfOneOfChildIsDisabledPerStore()
+    public function testGetProductFinalPriceIfOneOfChildIsDisabledPerStore(): void
     {
         $configurableProduct = $this->getConfigurableProductFromCollection();
         $this->assertEquals(10, $configurableProduct->getMinimalPrice());
 
-        $childProduct = $this->productRepository->getById(10, false, null, true);
+        $childProduct = $this->productRepository->get('simple_10', false, null, true);
         $childProduct->setStatus(Status::STATUS_DISABLED);
 
         // update in default store scope
@@ -120,12 +120,12 @@ class ConfigurableTest extends TestCase
      * @return void
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function testGetProductMinimalPriceIfOneOfChildIsOutOfStock()
+    public function testGetProductMinimalPriceIfOneOfChildIsOutOfStock(): void
     {
         $configurableProduct = $this->getConfigurableProductFromCollection();
         $this->assertEquals(10, $configurableProduct->getMinimalPrice());
 
-        $childProduct = $this->productRepository->get('simple_10', false, null, true);
+        $childProduct = $this->productRepository->getById(10, false, null, true);
         $stockItem = $childProduct->getExtensionAttributes()->getStockItem();
         $stockItem->setIsInStock(Stock::STOCK_OUT_OF_STOCK);
         $this->stockRepository->save($stockItem);

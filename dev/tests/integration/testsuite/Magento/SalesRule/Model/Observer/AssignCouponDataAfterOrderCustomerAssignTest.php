@@ -6,13 +6,14 @@
 
 namespace Magento\SalesRule\Model\Observer;
 
-use Magento\Sales\Model\Order;
+use Magento\Customer\Model\Data\Customer;
 use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Sales\Model\Order;
 use Magento\SalesRule\Api\CouponRepositoryInterface;
 use Magento\SalesRule\Model\Coupon;
 use Magento\SalesRule\Model\Rule;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Customer\Model\Data\Customer;
 use Magento\TestFramework\Helper\Bootstrap;
 
 /**

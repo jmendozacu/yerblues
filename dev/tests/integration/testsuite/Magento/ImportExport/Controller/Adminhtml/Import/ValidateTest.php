@@ -22,11 +22,12 @@ class ValidateTest extends \Magento\TestFramework\TestCase\AbstractBackendContro
      * @param string $mimeType
      * @param string $message
      * @param string $delimiter
+     * @throws \Magento\Framework\Exception\FileSystemException
      * @backupGlobals enabled
      * @magentoDbIsolation enabled
      * @SuppressWarnings(PHPMD.Superglobals)
      */
-    public function testValidationReturn(string $fileName, string $mimeType, string $message, string $delimiter)
+    public function testValidationReturn(string $fileName, string $mimeType, string $message, string $delimiter): void
     {
         $validationStrategy = ProcessingErrorAggregatorInterface::VALIDATION_STRATEGY_STOP_ON_ERROR;
 

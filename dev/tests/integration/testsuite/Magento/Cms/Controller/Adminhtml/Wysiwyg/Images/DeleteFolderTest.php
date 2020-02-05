@@ -40,7 +40,7 @@ class DeleteFolderTest extends \PHPUnit\Framework\TestCase
     private $filesystem;
 
     /**
-     * @var ResponseFactory
+     * @var HttpFactory
      */
     private $responseFactory;
 
@@ -52,6 +52,7 @@ class DeleteFolderTest extends \PHPUnit\Framework\TestCase
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->filesystem = $objectManager->get(\Magento\Framework\Filesystem::class);
         $this->mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
+        /** @var \Magento\Cms\Helper\Wysiwyg\Images $imagesHelper */
         $this->imagesHelper = $objectManager->get(\Magento\Cms\Helper\Wysiwyg\Images::class);
         $this->fullDirectoryPath = $this->imagesHelper->getStorageRoot();
         $this->responseFactory = $objectManager->get(ResponseFactory::class);
@@ -62,22 +63,23 @@ class DeleteFolderTest extends \PHPUnit\Framework\TestCase
      * Execute method with correct directory path to check that directories under WYSIWYG media directory
      * can be removed.
      *
+     * @return void
      * @magentoAppIsolation enabled
      */
     public function testExecute()
     {
-        $fullDirectoryPath = $this->imagesHelper->getStorageRoot();
         $directoryName = DIRECTORY_SEPARATOR . 'NewDirectory';
         $this->mediaDirectory->create(
-            $this->mediaDirectory->getRelativePath($fullDirectoryPath . $directoryName)
+            $this->mediaDirectory->getRelativePath($this->fullDirectoryPath . $directoryName)
         );
         $this->model->getRequest()->setParams(['node' => $this->imagesHelper->idEncode($directoryName)]);
         $this->model->getRequest()->setMethod('POST');
         $this->model->execute();
+
         $this->assertFalse(
             $this->mediaDirectory->isExist(
                 $this->mediaDirectory->getRelativePath(
-                    $fullDirectoryPath . $directoryName
+                    $this->fullDirectoryPath . $directoryName
                 )
             )
         );
@@ -103,9 +105,24 @@ class DeleteFolderTest extends \PHPUnit\Framework\TestCase
         $this->model->getRequest()->setParams(
             ['node' => $this->imagesHelper->idEncode('wysiwyg' . DIRECTORY_SEPARATOR . $directoryName)]
         );
-        $this->model->getRequest()->setMethod('POST');
         $this->model->execute();
         $this->assertFalse(is_dir($linkedDirectoryPath . DIRECTORY_SEPARATOR . $directoryName));
+    }
+
+    /**
+     * Execute method with traversal directory path to check that there is no ability to remove folder which is not
+     * under media directory.
+     *
+     * @return void
+     * @magentoAppIsolation enabled
+     */
+    public function testExecuteWithWrongDirectoryName()
+    {
+        $directoryName = '/../../etc/';
+        $this->model->getRequest()->setParams(['node' => $this->imagesHelper->idEncode($directoryName)]);
+        $this->model->execute();
+
+        $this->assertFileExists($this->fullDirectoryPath . $directoryName);
     }
 
     /**
@@ -120,7 +137,7 @@ class DeleteFolderTest extends \PHPUnit\Framework\TestCase
         $expectedResponseMessage = 'We cannot delete directory /downloadable.';
         $mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $mediaDirectory->create($directoryName);
-        $this->assertFileExists($this->fullDirectoryPath . DIRECTORY_SEPARATOR . $directoryName);
+        $this->assertFileExists($this->fullDirectoryPath . $directoryName);
 
         $this->model->getRequest()->setParams(['node' => $this->imagesHelper->idEncode($directoryName)]);
         $this->model->getRequest()->setMethod('POST');

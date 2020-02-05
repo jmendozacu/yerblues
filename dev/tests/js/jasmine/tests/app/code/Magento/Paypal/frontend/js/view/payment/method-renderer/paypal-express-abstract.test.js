@@ -77,7 +77,7 @@ define([
                         name: 'test',
                         index: 'test',
                         item: {
-                            method: 'paypal_express_bml'
+                            method: 'payflow_express_bml'
                         }
                     });
 
@@ -86,6 +86,13 @@ define([
                     ko.applyBindings(paypalExpressAbstract, tplElement);
                     done();
                 });
+        });
+
+        afterEach(function () {
+            try {
+                injector.clean();
+                injector.remove();
+            } catch (e) {}
         });
 
         it('showAcceptanceWindow is invoked when the anchor element of help link is clicked', function (done) {

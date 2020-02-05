@@ -3,6 +3,8 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
+
 namespace Magento\Catalog\Model\Indexer\Product\Price;
 
 use Magento\TestFramework\Helper\Bootstrap;
@@ -33,6 +35,9 @@ class SimpleWithOptionsTierPriceWithDimensionTest extends \PHPUnit\Framework\Tes
      */
     private $productCollectionFactory;
 
+    /**
+     * set up
+     */
     protected function setUp()
     {
         $this->objectManager = Bootstrap::getObjectManager();
@@ -42,14 +47,11 @@ class SimpleWithOptionsTierPriceWithDimensionTest extends \PHPUnit\Framework\Tes
 
     /**
      * @magentoDbIsolation disabled
-     * @--magentoIndexerDimensionMode catalog_product_price website_and_customer_group
+     * @magentoIndexerDimensionMode catalog_product_price website_and_customer_group
      * @magentoDataFixture Magento/Catalog/_files/category_product.php
      */
     public function testTierPrice()
     {
-        $this->markTestSkipped(
-            'Skipped because of MAGETWO-99136'
-        );
         $tierPriceValue = 9.00;
 
         $tierPrice = $this->objectManager->create(ProductTierPriceInterfaceFactory::class)

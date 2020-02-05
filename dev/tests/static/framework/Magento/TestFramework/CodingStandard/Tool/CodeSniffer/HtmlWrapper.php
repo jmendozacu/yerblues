@@ -13,7 +13,7 @@ class HtmlWrapper extends Wrapper
 {
     const FILE_EXTENSION = 'html';
 
-    const TOKENIZER = 'PHP';
+    private const TOKENIZER = 'PHP';
 
     /**
      * @inheritDoc

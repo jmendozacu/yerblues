@@ -3,14 +3,15 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
 
 namespace Magento\Bundle\Model\Product;
 
 /**
  * @magentoDbIsolation disabled
- * @--magentoIndexerDimensionMode catalog_product_price website_and_customer_group
+ * @magentoAppIsolation enabled
+ * @magentoIndexerDimensionMode catalog_product_price website_and_customer_group
  * @group indexer_dimension
- * @magentoAppArea frontend
  */
 class DynamicBundlePriceCalculatorWithDimensionTest extends BundlePriceAbstract
 {
@@ -18,15 +19,10 @@ class DynamicBundlePriceCalculatorWithDimensionTest extends BundlePriceAbstract
      * @param array $strategyModifiers
      * @param array $expectedResults
      * @dataProvider getTestCases
-     * @magentoAppIsolation enabled
      * @magentoDataFixture Magento/Bundle/_files/PriceCalculator/dynamic_bundle_product.php
-     * @magentoDbIsolation disabled
      */
     public function testPriceForDynamicBundle(array $strategyModifiers, array $expectedResults)
     {
-        $this->markTestSkipped(
-            'Skipped because of MAGETWO-99136'
-        );
         $this->prepareFixture($strategyModifiers, 'bundle_product');
         $bundleProduct = $this->productRepository->get('bundle_product', false, null, true);
 
@@ -59,16 +55,11 @@ class DynamicBundlePriceCalculatorWithDimensionTest extends BundlePriceAbstract
      * @param array $strategyModifiers
      * @param array $expectedResults
      * @dataProvider getTestCases
-     * @magentoAppIsolation enabled
      * @magentoConfigFixture current_store catalog/price/scope 1
      * @magentoDataFixture Magento/Bundle/_files/PriceCalculator/dynamic_bundle_product.php
-     * @magentoDbIsolation disabled
      */
     public function testPriceForDynamicBundleInWebsiteScope(array $strategyModifiers, array $expectedResults)
     {
-        $this->markTestSkipped(
-            'Skipped because of MAGETWO-99136'
-        );
         $this->prepareFixture($strategyModifiers, 'bundle_product');
         $bundleProduct = $this->productRepository->get('bundle_product', false, null, true);
 

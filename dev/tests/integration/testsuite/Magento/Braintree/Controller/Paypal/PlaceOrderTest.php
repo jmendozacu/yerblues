@@ -113,6 +113,43 @@ class PlaceOrderTest extends AbstractController
     }
 
     /**
+     * Tests a negative scenario for a place order flow when exception throws before order creation.
+     *
+     * @magentoAppArea frontend
+     * @magentoAppIsolation enabled
+     * @magentoDataFixture Magento/Braintree/Fixtures/paypal_quote.php
+     */
+    public function testExecuteWithFailedQuoteValidation()
+    {
+        $reservedOrderId = null;
+        $quote = $this->getQuote('test01');
+        $quote->setReservedOrderId($reservedOrderId);
+
+        $this->session->method('getQuote')
+            ->willReturn($quote);
+        $this->session->method('getQuoteId')
+            ->willReturn($quote->getId());
+
+        $this->adapter->method('sale')
+            ->willReturn($this->getTransactionStub('authorized'));
+        $this->adapter->method('void')
+            ->willReturn($this->getTransactionStub('voided'));
+
+        // emulates an error after placing the order
+        $this->session->method('setLastOrderStatus')
+            ->willThrowException(new \Exception('Test Exception'));
+
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
+        $this->dispatch('braintree/paypal/placeOrder');
+
+        self::assertRedirect(self::stringContains('checkout/cart'));
+        self::assertSessionMessages(
+            self::equalTo(['The order #' . $reservedOrderId . ' cannot be processed.']),
+            MessageInterface::TYPE_ERROR
+        );
+    }
+
+    /**
      * Gets quote by reserved order ID.
      *
      * @param string $reservedOrderId

@@ -12,9 +12,6 @@ use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 
-/**
- * Test Void command.
- */
 class VoidCommandTest extends AbstractTest
 {
     /**
@@ -23,8 +20,6 @@ class VoidCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testVoidCommand()
     {
@@ -33,7 +28,6 @@ class VoidCommandTest extends AbstractTest
         $command = $commandPool->get('void');
 
         $order = $this->getOrderWithIncrementId('100000002');
-        /** @var Payment $payment */
         $payment = $order->getPayment();
         $paymentDO = $this->paymentFactory->create($payment);
 
@@ -47,8 +41,10 @@ class VoidCommandTest extends AbstractTest
             ->willReturn(json_encode($response));
 
         $command->execute([
-            'payment' => $paymentDO,
+            'payment' => $paymentDO
         ]);
+
+        /** @var Payment $payment */
 
         $this->assertTrue($payment->getIsTransactionClosed());
         $this->assertTrue($payment->getShouldCloseParentTransaction());

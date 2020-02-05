@@ -12,9 +12,6 @@ use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 
-/**
- * Test Fetch Transaction Info command.
- */
 class FetchTransactionInfoCommandTest extends AbstractTest
 {
     /**
@@ -24,8 +21,6 @@ class FetchTransactionInfoCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/transactionSyncKeys transId,transactionType
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testTransactionApproved()
     {
@@ -52,9 +47,9 @@ class FetchTransactionInfoCommandTest extends AbstractTest
 
         $expected = [
             'transId' => '1234',
-            'transactionType' => 'authOnlyTransaction',
+            'transactionType' => 'authOnlyTransaction'
         ];
-        $this->assertSame($expected, $result->get());
+        $this->assertSame($expected, $result);
 
         /** @var Payment $payment */
         $this->assertTrue($payment->getIsTransactionApproved());
@@ -66,10 +61,8 @@ class FetchTransactionInfoCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/login someusername
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
-     * @magentoConfigFixture default_store payment/authorizenet_acceptjs/transactionSyncKeys transId,transactionType
+     * * @magentoConfigFixture default_store payment/authorizenet_acceptjs/transactionSyncKeys transId,transactionType
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testTransactionVoided()
     {
@@ -96,9 +89,9 @@ class FetchTransactionInfoCommandTest extends AbstractTest
 
         $expected = [
             'transId' => '1234',
-            'transactionType' => 'authOnlyTransaction',
+            'transactionType' => 'authOnlyTransaction'
         ];
-        $this->assertSame($expected, $result->get());
+        $this->assertSame($expected, $result);
 
         /** @var Payment $payment */
         $this->assertFalse($payment->getIsTransactionApproved());
@@ -112,8 +105,6 @@ class FetchTransactionInfoCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/transactionSyncKeys transId,transactionType
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testTransactionDenied()
     {
@@ -142,7 +133,7 @@ class FetchTransactionInfoCommandTest extends AbstractTest
             'transId' => '1234',
             'transactionType' => 'authOnlyTransaction'
         ];
-        $this->assertSame($expected, $result->get());
+        $this->assertSame($expected, $result);
 
         /** @var Payment $payment */
         $this->assertFalse($payment->getIsTransactionApproved());
@@ -156,8 +147,6 @@ class FetchTransactionInfoCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/transactionSyncKeys transId,transactionType
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testTransactionPending()
     {
@@ -186,7 +175,7 @@ class FetchTransactionInfoCommandTest extends AbstractTest
             'transId' => '1234',
             'transactionType' => 'authOnlyTransaction'
         ];
-        $this->assertSame($expected, $result->get());
+        $this->assertSame($expected, $result);
 
         /** @var Payment $payment */
         $this->assertNull($payment->getIsTransactionApproved());

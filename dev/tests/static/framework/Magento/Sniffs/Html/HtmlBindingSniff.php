@@ -29,7 +29,7 @@ class HtmlBindingSniff implements Sniff
      * @param File $file
      * @return \DOMDocument|null
      */
-    private function loadHtmlDocument(int $stackPointer, File $file)
+    private function loadHtmlDocument(int $stackPointer, File $file): ?\DOMDocument
     {
         if ($stackPointer === 0) {
             $html = $file->getTokensAsString($stackPointer, count($file->getTokens()));

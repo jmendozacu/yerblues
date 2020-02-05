@@ -20,7 +20,7 @@ use Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface as Transactio
 $objectManager = Bootstrap::getObjectManager();
 
 $addressData = include __DIR__ . '/../../Sales/_files/address_data.php';
-require __DIR__ . '/../../Catalog/_files/product_simple.php';
+require __DIR__ . '/../../../Magento/Catalog/_files/product_simple.php';
 
 $billingAddress = $objectManager->create(Address::class, ['data' => $addressData]);
 $billingAddress->setAddressType('billing');

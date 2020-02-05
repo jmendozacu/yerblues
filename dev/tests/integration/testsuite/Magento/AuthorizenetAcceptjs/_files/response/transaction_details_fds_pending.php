@@ -11,12 +11,12 @@ return [
         'resultCode' => 'Ok',
         'message' => [
             'code' => 'I00001',
-            'text' => 'Successful',
-        ],
+            'text' => 'Successful'
+        ]
     ],
     'transaction' => [
         'transId' => '1234',
         'transactionType' => 'authOnlyTransaction',
-        'transactionStatus' => 'FDSPendingReview',
-    ],
+        'transactionStatus' => 'FDSPendingReview'
+    ]
 ];

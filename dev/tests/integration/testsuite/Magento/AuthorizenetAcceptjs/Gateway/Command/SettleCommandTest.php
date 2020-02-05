@@ -12,9 +12,6 @@ use Magento\AuthorizenetAcceptjs\Gateway\AbstractTest;
 use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 
-/**
- * Test Settle command.
- */
 class SettleCommandTest extends AbstractTest
 {
     /**
@@ -23,8 +20,6 @@ class SettleCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
      * @magentoDataFixture Magento/AuthorizenetAcceptjs/Fixture/order_auth_only.php
-     *
-     * @return void
      */
     public function testRefundSettledCommand()
     {
@@ -48,7 +43,7 @@ class SettleCommandTest extends AbstractTest
 
         $command->execute([
             'payment' => $paymentDO,
-            'amount' => 100.00,
+            'amount' => 100.00
         ]);
 
         /** @var Payment $payment */

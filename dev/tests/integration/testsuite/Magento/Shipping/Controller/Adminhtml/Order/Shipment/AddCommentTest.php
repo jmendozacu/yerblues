@@ -27,7 +27,7 @@ class AddCommentTest extends AbstractShipmentControllerTest
     /**
      * @return void
      */
-    public function testSendEmailOnShipmentCommentAdd()
+    public function testSendEmailOnShipmentCommentAdd(): void
     {
         $comment = 'Test Shipment Comment';
         $order = $this->prepareRequest(

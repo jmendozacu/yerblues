@@ -44,7 +44,12 @@ class SaleCommandTest extends AbstractTest
         $payment = $order->getPayment();
 
         $paymentDO = $this->paymentFactory->create($payment);
+
+        $expectedRequest = include __DIR__ . '/../../Fixture/expected_request/sale.php';
         $response = include __DIR__ . '/../../../AuthorizenetAcceptjs/_files/response/sale.php';
+
+        $this->clientMock->method('setRawData')
+            ->with(json_encode($expectedRequest), 'application/json');
 
         $this->responseMock->method('getBody')
             ->willReturn(json_encode($response));
@@ -52,7 +57,7 @@ class SaleCommandTest extends AbstractTest
         $command->execute(
             [
                 'payment' => $paymentDO,
-                'amount' => 110.00
+                'amount' => 100.00
             ]
         );
 

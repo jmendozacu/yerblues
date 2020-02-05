@@ -38,7 +38,7 @@ class AssertReportStatisticsNoticeMessage extends AbstractAssertSalesReportResul
         $displayedDate = new \DateTime($this->getLastUpdatedDate(), $timezone);
         $currentDate = new \DateTime('now', $timezone);
 
-        \PHPUnit_Framework_Assert::assertTrue(
+        \PHPUnit\Framework\Assert::assertTrue(
             $displayedDate->getTimestamp() > $initialDate->getTimestamp()
             && $displayedDate->getTimestamp() < $currentDate->getTimestamp(),
             "Message in Sales Reports Page is displayed in an incorrect timezone."

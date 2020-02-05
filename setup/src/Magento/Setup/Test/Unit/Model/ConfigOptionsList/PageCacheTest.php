@@ -29,7 +29,7 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
     private $deploymentConfigMock;
 
     /**
-     * @inheritdoc
+     * Test setup
      */
     protected function setUp()
     {
@@ -39,10 +39,13 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
         $this->configList = new PageCache($this->validatorMock);
     }
 
+    /**
+     * testGetOptions
+     */
     public function testGetOptions()
     {
         $options = $this->configList->getOptions();
-        $this->assertCount(7, $options);
+        $this->assertCount(8, $options);
 
         $this->assertArrayHasKey(0, $options);
         $this->assertInstanceOf(SelectConfigOption::class, $options[0]);
@@ -62,17 +65,24 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
 
         $this->assertArrayHasKey(4, $options);
         $this->assertInstanceOf(TextConfigOption::class, $options[4]);
-        $this->assertEquals('page-cache-redis-compress-data', $options[4]->getName());
+        $this->assertEquals('page-cache-redis-password', $options[4]->getName());
 
         $this->assertArrayHasKey(5, $options);
         $this->assertInstanceOf(TextConfigOption::class, $options[5]);
-        $this->assertEquals('page-cache-redis-password', $options[5]->getName());
+        $this->assertEquals('page-cache-redis-compress-data', $options[5]->getName());
 
         $this->assertArrayHasKey(6, $options);
         $this->assertInstanceOf(TextConfigOption::class, $options[6]);
-        $this->assertEquals('page-cache-id-prefix', $options[6]->getName());
+        $this->assertEquals('page-cache-redis-compression-lib', $options[6]->getName());
+
+        $this->assertArrayHasKey(7, $options);
+        $this->assertInstanceOf(TextConfigOption::class, $options[7]);
+        $this->assertEquals('page-cache-id-prefix', $options[7]->getName());
     }
 
+    /**
+     * testCreateConfigWithRedis
+     */
     public function testCreateConfigWithRedis()
     {
         $this->deploymentConfigMock->method('get')->willReturn('');
@@ -87,7 +97,8 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
                             'port' => '',
                             'database' => '',
                             'compress_data' => '',
-                            'password' => ''
+                            'password' => '',
+                            'compression_lib' => '',
                         ],
                         'id_prefix' => $this->expectedIdPrefix(),
                     ]
@@ -100,6 +111,9 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedConfigData, $configData->getData());
     }
 
+    /**
+     * testCreateConfigWithRedisConfiguration
+     */
     public function testCreateConfigWithRedisConfiguration()
     {
         $expectedConfigData = [
@@ -111,8 +125,9 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
                             'server' => 'foo.bar',
                             'port' => '9000',
                             'database' => '6',
+                            'password' => '',
                             'compress_data' => '1',
-                            'password' => ''
+                            'compression_lib' => 'gzip',
                         ],
                         'id_prefix' => $this->expectedIdPrefix(),
                     ]
@@ -125,7 +140,8 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
             'page-cache-redis-server' => 'foo.bar',
             'page-cache-redis-port' => '9000',
             'page-cache-redis-db' => '6',
-            'page-cache-redis-compress-data' => '1'
+            'page-cache-redis-compress-data' => '1',
+            'page-cache-redis-compression-lib' => 'gzip',
         ];
 
         $configData = $this->configList->createConfig($options, $this->deploymentConfigMock);
@@ -133,6 +149,9 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedConfigData, $configData->getData());
     }
 
+    /**
+     * testCreateConfigWithRedis
+     */
     public function testCreateConfigWithFileCache()
     {
         $this->deploymentConfigMock->method('get')->willReturn('');
@@ -152,6 +171,9 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedConfigData, $configData->getData());
     }
 
+    /**
+     * testCreateConfigCacheRedis
+     */
     public function testCreateConfigWithIdPrefix()
     {
         $this->deploymentConfigMock->method('get')->willReturn('');
@@ -175,6 +197,9 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedConfigData, $configData->getData());
     }
 
+    /**
+     * testValidationWithValidData
+     */
     public function testValidationWithValidData()
     {
         $this->validatorMock->expects($this->once())
@@ -191,6 +216,9 @@ class PageCacheTest extends \PHPUnit\Framework\TestCase
         $this->assertEmpty($errors);
     }
 
+    /**
+     * testValidationWithInvalidData
+     */
     public function testValidationWithInvalidData()
     {
         $options = [

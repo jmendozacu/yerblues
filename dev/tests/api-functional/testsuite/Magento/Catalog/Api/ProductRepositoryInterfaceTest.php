@@ -3,13 +3,20 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
+
 namespace Magento\Catalog\Api;
 
+use Magento\Authorization\Model\Role;
+use Magento\Authorization\Model\Rules;
+use Magento\Authorization\Model\RoleFactory;
+use Magento\Authorization\Model\RulesFactory;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Downloadable\Model\Link;
-use Magento\Store\Model\Store;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\Downloadable\Api\DomainManagerInterface;
+use Magento\Downloadable\Model\Link;
+use Magento\Integration\Api\AdminTokenServiceInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\Website;
 use Magento\Store\Model\WebsiteRepository;
 use Magento\TestFramework\Helper\Bootstrap;
@@ -19,10 +26,12 @@ use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SortOrder;
 use Magento\Framework\Api\SortOrderBuilder;
-use Magento\Framework\Webapi\Exception as HTTPExceptionCodes;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Webapi\Exception as HTTPExceptionCodes;
 
 /**
+ * Test for \Magento\Catalog\Api\ProductRepositoryInterface
+ *
  * @magentoAppIsolation enabled
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -52,16 +61,22 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             ProductInterface::TYPE_ID => 'simple',
             ProductInterface::PRICE => 10
         ],
-        [
-            ProductInterface::SKU => [
-                'rest' => 'sku%252fwith%252fslashes',
-                'soap' => 'sku%2fwith%2fslashes'
-            ],
-            ProductInterface::NAME => 'Simple Product with Sku with Slashes',
-            ProductInterface::TYPE_ID => 'simple',
-            ProductInterface::PRICE => 10
-        ],
     ];
+
+    /**
+     * @var RoleFactory
+     */
+    private $roleFactory;
+
+    /**
+     * @var RulesFactory
+     */
+    private $rulesFactory;
+
+    /**
+     * @var AdminTokenServiceInterface
+     */
+    private $adminTokens;
 
     /**
      * @inheritDoc
@@ -70,9 +85,11 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     {
         parent::setUp();
 
-        $objectManager = Bootstrap::getObjectManager();
+        $this->roleFactory = Bootstrap::getObjectManager()->get(RoleFactory::class);
+        $this->rulesFactory = Bootstrap::getObjectManager()->get(RulesFactory::class);
+        $this->adminTokens = Bootstrap::getObjectManager()->get(AdminTokenServiceInterface::class);
         /** @var DomainManagerInterface $domainManager */
-        $domainManager = $objectManager->get(DomainManagerInterface::class);
+        $domainManager = Bootstrap::getObjectManager()->get(DomainManagerInterface::class);
         $domainManager->addDomains(['example.com']);
     }
 
@@ -90,6 +107,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test get() method
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/products_related.php
      */
     public function testGet()
@@ -103,6 +122,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Get product
+     *
      * @param string $sku
      * @param string|null $storeCode
      * @return array|bool|float|int|string
@@ -120,11 +141,14 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'operation' => self::SERVICE_NAME . 'Get',
             ],
         ];
-
         $response = $this->_webApiCall($serviceInfo, ['sku' => $sku], null, $storeCode);
+
         return $response;
     }
 
+    /**
+     * Test get() method with invalid sku
+     */
     public function testGetNoSuchEntityException()
     {
         $invalidSku = '(nonExistingSku)';
@@ -140,7 +164,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             ],
         ];
 
-        $expectedMessage = 'Requested product doesn\'t exist';
+        $expectedMessage = "The product that was requested doesn't exist. Verify the product and try again.";
 
         try {
             $this->_webApiCall($serviceInfo, ['sku' => $invalidSku]);
@@ -159,6 +183,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Product creation provider
+     *
      * @return array
      */
     public function productCreationProvider()
@@ -169,6 +195,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 $data
             );
         };
+
         return [
             [$productBuilder([ProductInterface::TYPE_ID => 'simple', ProductInterface::SKU => 'psku-test-1'])],
             [$productBuilder([ProductInterface::TYPE_ID => 'virtual', ProductInterface::SKU => 'psku-test-2'])],
@@ -176,28 +203,13 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
-     * @magentoApiDataFixture Magento/Catalog/_files/product_simple_sku_with_slash.php
-     */
-    public function testGetBySkuWithSlash()
-    {
-        $productData = $this->productData[2];
-        $response = $this->getProduct($productData[ProductInterface::SKU][TESTS_WEB_API_ADAPTER]);
-        $productData[ProductInterface::SKU] = rawurldecode($productData[ProductInterface::SKU]['soap']);
-        foreach ([ProductInterface::SKU, ProductInterface::NAME, ProductInterface::PRICE] as $key) {
-            $this->assertEquals($productData[$key], $response[$key]);
-        }
-        $this->assertEquals([1], $response[ProductInterface::EXTENSION_ATTRIBUTES_KEY]["website_ids"]);
-    }
-
-    /**
      * Load website by website code
      *
-     * @param string $websiteCode
+     * @param $websiteCode
      * @return Website
      */
-    private function loadWebsiteByCode(string $websiteCode): Website
+    private function loadWebsiteByCode($websiteCode)
     {
-        /** @var WebsiteRepository $websiteRepository */
         $websiteRepository = Bootstrap::getObjectManager()->get(WebsiteRepository::class);
         try {
             $website = $websiteRepository->get($websiteCode);
@@ -209,75 +221,15 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
-     * Test for check that 2 same product create and url_key save.
-     *
-     * @return void
-     */
-    public function testSaveTwoSameProduct()
-    {
-        $serviceInfo = [
-            'rest' => [
-                'resourcePath' => self::RESOURCE_PATH,
-                'httpMethod' => \Magento\Framework\Webapi\Rest\Request::HTTP_METHOD_POST,
-            ],
-            'soap' => [
-                'service' => self::SERVICE_NAME,
-                'serviceVersion' => self::SERVICE_VERSION,
-                'operation' => self::SERVICE_NAME . 'Save',
-            ],
-        ];
-
-        $product1 = [
-            'product' => [
-                'attribute_set_id' => 4,
-                'name' =>  "Test API 1",
-                'price' =>  254.13,
-                'sku' => '1234',
-            ]
-        ];
-        $product2 = [
-            'product' => [
-                'attribute_set_id' => 4,
-                'name' =>  "Test API 1",
-                'price' =>  254.13,
-                'sku' => '1235',
-            ]
-        ];
-
-        $product1 = $this->_webApiCall($serviceInfo, $product1);
-        $response = $this->_webApiCall($serviceInfo, $product2);
-
-        $index = null;
-        foreach ($response['custom_attributes'] as $key => $customAttribute) {
-            if ($customAttribute['attribute_code'] == 'url_key') {
-                $index = $key;
-                break;
-            }
-        }
-
-        $this->assertArrayHasKey(ProductInterface::SKU, $response);
-
-        $expectedResult = $product1['custom_attributes'][$index]['value'] . '-1';
-        $this->assertEquals($expectedResult, $response['custom_attributes'][$index]['value']);
-
-        $this->deleteProduct('1234');
-        $this->deleteProduct('1235');
-    }
-
-    /**
      * Test removing association between product and website 1
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_with_two_websites.php
      */
     public function testUpdateWithDeleteWebsites()
     {
         $productBuilder[ProductInterface::SKU] = 'unique-simple-azaza';
         /** @var Website $website */
-        $website = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(Website::class);
-        $website->load('second_website', 'code');
-
-        if (!$website->getId()) {
-            $this->fail("Couldn`t load website");
-        }
+        $website = $this->loadWebsiteByCode('second_website');
 
         $websitesData = [
             'website_ids' => [
@@ -294,18 +246,12 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
 
     /**
      * Test removing all website associations
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_with_two_websites.php
      */
     public function testDeleteAllWebsiteAssociations()
     {
         $productBuilder[ProductInterface::SKU] = 'unique-simple-azaza';
-        /** @var Website $website */
-        $website = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(Website::class);
-        $website->load('second_website', 'code');
-
-        if (!$website->getId()) {
-            $this->fail("Couldn`t load website");
-        }
 
         $websitesData = [
             'website_ids' => []
@@ -319,6 +265,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test create() method with multiple websites
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/second_website.php
      */
     public function testCreateWithMultipleWebsites()
@@ -326,9 +274,9 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         $productBuilder = $this->getSimpleProductData();
         $productBuilder[ProductInterface::SKU] = 'test-test-sku';
         $productBuilder[ProductInterface::TYPE_ID] = 'simple';
-
         /** @var Website $website */
         $website = $this->loadWebsiteByCode('test_website');
+
         $websitesData = [
             'website_ids' => [
                 1,
@@ -422,6 +370,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test create() method
+     *
      * @dataProvider productCreationProvider
      */
     public function testCreate($product)
@@ -489,11 +439,14 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         $this->deleteProduct($fixtureProduct[ProductInterface::SKU]);
     }
 
+    /**
+     * Test create() method with invalid price format
+     */
     public function testCreateInvalidPriceFormat()
     {
         $this->_markTestAsRestOnly("In case of SOAP type casting is handled by PHP SoapServer, no need to test it");
         $expectedMessage = 'Error occurred during "price" processing. '
-            . 'Invalid type for value: "invalid_format". Expected Type: "float".';
+            . 'The "invalid_format" value\'s type is invalid. The "float" type was expected. Verify and try again.';
 
         try {
             $this->saveProduct(['name' => 'simple', 'price' => 'invalid_format', 'sku' => 'simple']);
@@ -503,32 +456,6 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             $this->assertEquals($expectedMessage, $errorObj['message']);
             $this->assertEquals(HTTPExceptionCodes::HTTP_BAD_REQUEST, $e->getCode());
         }
-    }
-
-    /**
-     * Test that Product Repository can correctly create simple product, if product type not specified in request.
-     *
-     * @return void
-     */
-    public function testCreateWithoutSpecifiedType()
-    {
-        $price = 3.62;
-        $weight = 12.2;
-        $sku = 'simple_product_without_specified_type';
-        $product = [
-            'sku' => $sku,
-            'name' => 'Simple Product Without Specified Type',
-            'price' => $price,
-            'weight' => $weight,
-            'attribute_set_id' => 4,
-        ];
-        $response = $this->saveProduct($product);
-        $this->assertSame($sku, $response[ProductInterface::SKU]);
-        $this->assertSame(\Magento\Catalog\Model\Product\Type::TYPE_SIMPLE, $response[ProductInterface::TYPE_ID]);
-        $this->assertSame($price, $response[ProductInterface::PRICE]);
-        $this->assertSame($weight, $response[ProductInterface::WEIGHT]);
-        //Clean up.
-        $this->deleteProduct($product[ProductInterface::SKU]);
     }
 
     /**
@@ -542,13 +469,18 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         $sku = $fixtureProduct[ProductInterface::SKU];
         $this->saveProduct($fixtureProduct);
         $this->expectException('Exception');
-        $this->expectExceptionMessage('Requested product doesn\'t exist');
+        $this->expectExceptionMessage(
+            "The product that was requested doesn't exist. Verify the product and try again."
+        );
 
         // Delete all with 'all' store code
         $this->deleteProduct($sku);
         $this->getProduct($sku);
     }
 
+    /**
+     * Test product links
+     */
     public function testProductLinks()
     {
         // Create simple product
@@ -582,7 +514,6 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             ProductInterface::TYPE_ID => 'simple',
             ProductInterface::PRICE => 100,
             ProductInterface::STATUS => 1,
-            ProductInterface::TYPE_ID => 'simple',
             ProductInterface::ATTRIBUTE_SET_ID => 4,
             "product_links" => [$productLinkData]
         ];
@@ -645,6 +576,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Get options data
+     *
      * @param string $productSku
      * @return array
      */
@@ -684,6 +617,9 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         ];
     }
 
+    /**
+     * Test product options
+     */
     public function testProductOptions()
     {
         //Create product with options
@@ -745,9 +681,13 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         $this->deleteProduct($productData[ProductInterface::SKU]);
     }
 
+    /**
+     * Test product with media gallery
+     */
     public function testProductWithMediaGallery()
     {
         $testImagePath = __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'test_image.jpg';
+        // @codingStandardsIgnoreLine
         $encodedImage = base64_encode(file_get_contents($testImagePath));
         //create a product with media gallery
         $filename1 = 'tiny1' . time() . '.jpg';
@@ -776,7 +716,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'position' => 2,
                 'media_type' => 'image',
                 'disabled' => false,
-                'types' => ['image', 'small_image'],
+                'types' => [],
                 'file' => '/t/i/' . $filename2,
             ],
         ];
@@ -789,7 +729,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'label' => 'tiny1_new_label',
                 'position' => 1,
                 'disabled' => false,
-                'types' => ['image', 'small_image'],
+                'types' => [],
                 'file' => '/t/i/' . $filename1,
             ],
         ];
@@ -803,7 +743,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'media_type' => 'image',
                 'position' => 1,
                 'disabled' => false,
-                'types' => ['image', 'small_image'],
+                'types' => [],
                 'file' => '/t/i/' . $filename1,
             ]
         ];
@@ -823,6 +763,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test update() method
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testUpdate()
@@ -845,7 +787,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
      *
      * @magentoApiDataFixture Magento/Downloadable/_files/product_downloadable.php
      */
-    public function testUpdateWithExtensionAttributes()
+    public function testUpdateWithExtensionAttributes(): void
     {
         $sku = 'downloadable-product';
         $linksKey = 'downloadable_product_links';
@@ -866,11 +808,21 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Update product
+     *
      * @param array $product
+     * @param string|null $token
      * @return array|bool|float|int|string
      */
-    protected function updateProduct($product)
+    protected function updateProduct($product, ?string $token = null)
     {
+        if (isset($product['custom_attributes'])) {
+            foreach ($product['custom_attributes'] as &$attribute) {
+                if ($attribute['attribute_code'] == 'category_ids' && !is_array($attribute['value'])) {
+                    $attribute['value'] = [""];
+                }
+            }
+        }
         $sku = $product[ProductInterface::SKU];
         if (TESTS_WEB_API_ADAPTER == self::ADAPTER_REST) {
             $product[ProductInterface::SKU] = null;
@@ -887,12 +839,17 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'operation' => self::SERVICE_NAME . 'Save',
             ],
         ];
+        if ($token) {
+            $serviceInfo['rest']['token'] = $serviceInfo['soap']['token'] = $token;
+        }
         $requestData = ['product' => $product];
         $response = $this->_webApiCall($serviceInfo, $requestData);
         return $response;
     }
 
     /**
+     * Test delete() method
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testDelete()
@@ -902,6 +859,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test getList() method
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testGetList()
@@ -964,7 +923,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
-     * @return void
+     * Test getList() method with additional params
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testGetListWithAdditionalParams()
@@ -983,7 +943,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'resourcePath' => self::RESOURCE_PATH . '?' . http_build_query($searchCriteria) . '&fields=' .
                     $additionalParams,
                 'httpMethod' => \Magento\Framework\Webapi\Rest\Request::HTTP_METHOD_GET,
-            ],
+            ]
         ];
 
         $response = $this->_webApiCall($serviceInfo, $searchCriteria);
@@ -1000,10 +960,12 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
 
         $this->assertNotNull($response['items'][0]['custom_attributes'][$indexDescription]['attribute_code']);
         $this->assertNotNull($response['items'][0]['custom_attributes'][$indexDescription]['value']);
-        $this->assertCount(1, $response['items'][0]['custom_attributes']);
+        $this->assertTrue(count($response['items'][0]['custom_attributes']) == 1);
     }
 
     /**
+     * Test getList() method with filtering by website
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/products_with_websites_and_stores.php
      * @return void
      */
@@ -1091,6 +1053,11 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         }
     }
 
+    /**
+     * Test getList() method with filtering by store data provider
+     *
+     * @return array
+     */
     public function testGetListWithFilteringByStoreDataProvider()
     {
         return [
@@ -1130,6 +1097,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test getList() method with multiple filter groups and sorting and pagination
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/products_for_search.php
      */
     public function testGetListWithMultipleFilterGroupsAndSortingAndPagination()
@@ -1199,6 +1168,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Convert custom attributes to associative array
+     *
      * @param $customAttributes
      * @return array
      */
@@ -1208,10 +1179,13 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         foreach ($customAttributes as $customAttribute) {
             $converted[$customAttribute['attribute_code']] = $customAttribute['value'];
         }
+
         return $converted;
     }
 
     /**
+     * Convert associative array to custom attributes
+     *
      * @param $data
      * @return array
      */
@@ -1221,10 +1195,13 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         foreach ($data as $attributeCode => $attributeValue) {
             $customAttributes[] = ['attribute_code' => $attributeCode, 'value' => $attributeValue];
         }
+
         return $customAttributes;
     }
 
     /**
+     * Test eav attributes
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/product_simple.php
      */
     public function testEavAttributes()
@@ -1268,7 +1245,6 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             ProductInterface::TYPE_ID => 'simple',
             ProductInterface::PRICE => 3.62,
             ProductInterface::STATUS => 1,
-            ProductInterface::TYPE_ID => 'simple',
             ProductInterface::ATTRIBUTE_SET_ID => 4,
             'custom_attributes' => [
                 ['attribute_code' => 'cost', 'value' => ''],
@@ -1278,12 +1254,24 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Save Product
+     *
      * @param $product
      * @param string|null $storeCode
+     * @param string|null $token
      * @return mixed
      */
-    protected function saveProduct($product, $storeCode = null)
+    protected function saveProduct($product, $storeCode = null, ?string $token = null)
     {
+        if (isset($product['custom_attributes'])) {
+            foreach ($product['custom_attributes'] as &$attribute) {
+                if ($attribute['attribute_code'] == 'category_ids'
+                    && !is_array($attribute['value'])
+                ) {
+                    $attribute['value'] = [""];
+                }
+            }
+        }
         $serviceInfo = [
             'rest' => [
                 'resourcePath' => self::RESOURCE_PATH,
@@ -1295,7 +1283,11 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'operation' => self::SERVICE_NAME . 'Save',
             ],
         ];
+        if ($token) {
+            $serviceInfo['rest']['token'] = $serviceInfo['soap']['token'] = $token;
+        }
         $requestData = ['product' => $product];
+
         return $this->_webApiCall($serviceInfo, $requestData, null, $storeCode);
     }
 
@@ -1323,6 +1315,9 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             $this->_webApiCall($serviceInfo, ['sku' => $sku]) : $this->_webApiCall($serviceInfo);
     }
 
+    /**
+     * Test tier prices
+     */
     public function testTierPrices()
     {
         // create a product with tier prices
@@ -1407,6 +1402,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Get stock item data
+     *
      * @return array
      */
     private function getStockItemData()
@@ -1439,6 +1436,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test product category links
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/category_product.php
      */
     public function testProductCategoryLinks()
@@ -1461,6 +1460,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test update product category without categories
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/category_product.php
      */
     public function testUpdateProductCategoryLinksNullOrNotExists()
@@ -1482,6 +1483,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test update product category links position
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/category_product.php
      */
     public function testUpdateProductCategoryLinksPosistion()
@@ -1499,6 +1502,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Test update product category links unassing
+     *
      * @magentoApiDataFixture Magento/Catalog/_files/category_product.php
      */
     public function testUpdateProductCategoryLinksUnassign()
@@ -1511,6 +1516,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Get media gallery data
+     *
      * @param $filename1
      * @param $encodedImage
      * @param $filename2
@@ -1536,7 +1543,7 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
                 'media_type' => 'image',
                 'disabled' => false,
                 'label' => 'tiny2',
-                'types' => ['image', 'small_image'],
+                'types' => [],
                 'content' => [
                     'type' => 'image/jpeg',
                     'name' => $filename2,
@@ -1546,6 +1553,9 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         ];
     }
 
+    /**
+     * Test special price
+     */
     public function testSpecialPrice()
     {
         $productData = $this->getSimpleProductData();
@@ -1595,6 +1605,9 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
         $this->assertFalse(array_key_exists(self::KEY_SPECIAL_PRICE, $customAttributes));
     }
 
+    /**
+     * Test update status
+     */
     public function testUpdateStatus()
     {
         // Create simple product
@@ -1667,6 +1680,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Get attribute options
+     *
      * @param string $attributeCode
      * @return array|bool|float|int|string
      */
@@ -1688,6 +1703,8 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
     }
 
     /**
+     * Assert multiselect value
+     *
      * @param string $productSku
      * @param string $multiselectAttributeCode
      * @param string $expectedMultiselectValue
@@ -1705,5 +1722,107 @@ class ProductRepositoryInterfaceTest extends WebapiAbstract
             }
         }
         $this->assertEquals($expectedMultiselectValue, $multiselectValue);
+    }
+
+    /**
+     * Test design settings authorization
+     *
+     * @magentoApiDataFixture Magento/User/_files/user_with_custom_role.php
+     * @throws \Throwable
+     * @return void
+     */
+    public function testSaveDesign(): void
+    {
+        //Updating our admin user's role to allow saving products but not their design settings.
+        /** @var Role $role */
+        $role = $this->roleFactory->create();
+        $role->load('test_custom_role', 'role_name');
+        /** @var Rules $rules */
+        $rules = $this->rulesFactory->create();
+        $rules->setRoleId($role->getId());
+        $rules->setResources(['Magento_Catalog::products']);
+        $rules->saveRel();
+        //Using the admin user with custom role.
+        $token = $this->adminTokens->createAdminAccessToken(
+            'customRoleUser',
+            \Magento\TestFramework\Bootstrap::ADMIN_PASSWORD
+        );
+
+        $productData = $this->getSimpleProductData();
+        $productData['custom_attributes'][] = ['attribute_code' => 'custom_design', 'value' => '1'];
+
+        //Creating new product with design settings.
+        $exceptionMessage = null;
+        try {
+            $this->saveProduct($productData, null, $token);
+        } catch (\Throwable $exception) {
+            if ($restResponse = json_decode($exception->getMessage(), true)) {
+                //REST
+                $exceptionMessage = $restResponse['message'];
+            } else {
+                //SOAP
+                $exceptionMessage = $exception->getMessage();
+            }
+        }
+        //We don't have the permissions.
+        $this->assertEquals('Not allowed to edit the product\'s design attributes', $exceptionMessage);
+
+        //Updating the user role to allow access to design properties.
+        /** @var Rules $rules */
+        $rules = Bootstrap::getObjectManager()->create(Rules::class);
+        $rules->setRoleId($role->getId());
+        $rules->setResources(['Magento_Catalog::products', 'Magento_Catalog::edit_product_design']);
+        $rules->saveRel();
+        //Making the same request with design settings.
+        $result = $this->saveProduct($productData, null, $token);
+        $this->assertArrayHasKey('id', $result);
+        //Product must be saved.
+        $productSaved = $this->getProduct($productData[ProductInterface::SKU]);
+        $savedCustomDesign = null;
+        foreach ($productSaved['custom_attributes'] as $customAttribute) {
+            if ($customAttribute['attribute_code'] === 'custom_design') {
+                $savedCustomDesign = $customAttribute['value'];
+                break;
+            }
+        }
+        $this->assertEquals('1', $savedCustomDesign);
+        $productData = $productSaved;
+
+        //Updating our role to remove design properties access.
+        /** @var Rules $rules */
+        $rules = Bootstrap::getObjectManager()->create(Rules::class);
+        $rules->setRoleId($role->getId());
+        $rules->setResources(['Magento_Catalog::products']);
+        $rules->saveRel();
+        //Updating the product but with the same design properties values.
+        //Removing the design attribute and keeping existing value.
+        $attributes = $productData['custom_attributes'];
+        foreach ($attributes as $i => $attribute) {
+            if ($attribute['attribute_code'] === 'custom_design') {
+                unset($productData['custom_attributes'][$i]);
+                break;
+            }
+        }
+        unset($attributes, $attribute, $i);
+        $result = $this->updateProduct($productData, $token);
+        //We haven't changed the design so operation is successful.
+        $this->assertArrayHasKey('id', $result);
+
+        //Changing a design property.
+        $productData['custom_attributes'][] = ['attribute_code' => 'custom_design', 'value' => '2'];
+        $exceptionMessage = null;
+        try {
+            $this->updateProduct($productData, $token);
+        } catch (\Throwable $exception) {
+            if ($restResponse = json_decode($exception->getMessage(), true)) {
+                //REST
+                $exceptionMessage = $restResponse['message'];
+            } else {
+                //SOAP
+                $exceptionMessage = $exception->getMessage();
+            }
+        }
+        //We don't have permissions to do that.
+        $this->assertEquals('Not allowed to edit the product\'s design attributes', $exceptionMessage);
     }
 }

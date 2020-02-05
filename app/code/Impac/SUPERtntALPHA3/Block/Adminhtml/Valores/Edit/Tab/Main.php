@@ -1,5 +1,5 @@
 <?php
-namespace Impac\SUPERtntALPHA3\Block\Adminhtml\Items\Edit\Tab;
+namespace Impac\SUPERtntALPHA3\Block\Adminhtml\Valores\Edit\Tab;
 
 use Magento\Backend\Block\Widget\Form\Generic;
 use Magento\Backend\Block\Widget\Tab\TabInterface;
@@ -50,27 +50,27 @@ class Main extends Generic implements TabInterface
     }
     protected function _prepareForm()
     {
-        $model = $this->_coreRegistry->registry('current_impac_supertntalpha3_items');
+        $model = $this->_coreRegistry->registry('current_impac_Valores_items');
         $form = $this->_formFactory->create();
-        $form->setHtmlIdPrefix('item_');
+        $form->setHtmlIdPrefix('valor_');
         $fieldset = $form->addFieldset('base_fieldset', ['legend' => __('Item Information')]);
         if ($model->getId()) {
-            $fieldset->addField('supertntalpha3_id', 'hidden', ['name' => 'supertntalpha3_id']);
+            $fieldset->addField('valores_id', 'hidden', ['name' => 'valores_id']);
         }
         $fieldset->addField(
-            'nombreOficina',
+            'pesoMaximo',
             'text',
-            ['name' => 'nombreOficina', 'label' => __('Nombre'), 'title' => __('Nombre'), 'required' => true]
+            ['name' => 'pesoMaximo', 'label' => __('pesoMaximo'), 'title' => __('Peso Máximo'), 'required' => true]
         );
         $fieldset->addField(
-            'Direccion',
+            'costoA',
             'text',
-            ['name' => 'Direccion', 'label' => __('Dirección'), 'title' => __('Dirección'), 'required' => true]
+            ['name' => 'costoA', 'label' => __('Costo A'), 'title' => __('Costo A'), 'required' => true]
         );
         $fieldset->addField(
-            'telefono',
+            'costoB',
             'text',
-            ['name' => 'telefono', 'label' => __('Teléfono'), 'title' => __('Teléfono'), 'required' => true]
+            ['name' => 'costoB', 'label' => __('Costo B'), 'title' => __('Costo B'), 'required' => true]
         );
         $form->setValues($model->getData());
         $this->setForm($form);

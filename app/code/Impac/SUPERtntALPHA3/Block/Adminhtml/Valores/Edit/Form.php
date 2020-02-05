@@ -1,12 +1,12 @@
 <?php
-namespace Impac\SUPERtntALPHA3\Block\Adminhtml\Items\Edit;
+namespace Impac\SUPERtntALPHA3\Block\Adminhtml\Valores\Edit;
 
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
     protected function _construct()
     {
         parent::_construct();
-        $this->setId('supertntalpha3_items_form');
+        $this->setId('valores_items_form');
         $this->setTitle(__('Item Information'));
     }
     protected function _prepareForm()
@@ -15,7 +15,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             [
                 'data' => [
                     'id' => 'edit_form',
-                    'action' => $this->getUrl('impac_supertntalpha3/items/save'),
+                    'action' => $this->getUrl('impac_supertntalpha3/valores/save'),
                     'method' => 'post',
                     'enctype' => 'multipart/form-data'
                 ],

@@ -41,7 +41,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Test adding product to compare list.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function testAddAction()
     {
@@ -76,7 +76,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
      *
      * @return void
      */
-    public function testAddActionForDisabledProduct()
+    public function testAddActionForDisabledProduct(): void
     {
         $this->_requireVisitorWithNoProducts();
         /** @var \Magento\Catalog\Model\Product $product */
@@ -99,7 +99,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Test comparing a product.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function testIndexActionAddProducts()
     {
@@ -115,7 +115,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Test removing a product from compare list.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function testRemoveAction()
     {
@@ -139,7 +139,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
      *
      * @return void
      */
-    public function testRemoveActionForDisabledProduct()
+    public function testRemoveActionForDisabledProduct(): void
     {
         $this->_requireVisitorWithTwoProducts();
         /** @var \Magento\Catalog\Model\Product $product */
@@ -155,7 +155,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Test removing a product from compare list of a registered customer.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function testRemoveActionWithSession()
     {
@@ -177,8 +177,6 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
 
     /**
      * Test getting a list of compared product.
-     *
-     * @return void
      */
     public function testIndexActionDisplay()
     {
@@ -208,8 +206,6 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
 
     /**
      * Test clearing a list of compared products.
-     *
-     * @return void
      */
     public function testClearAction()
     {
@@ -232,7 +228,6 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
      * Test escaping a session message.
      *
      * @magentoDataFixture Magento/Catalog/_files/product_simple_xss.php
-     * @return void
      */
     public function testRemoveActionProductNameXss()
     {
@@ -267,7 +262,8 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Preparing compare list.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     protected function _prepareCompareListWithProductNameXss()
     {
@@ -275,6 +271,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
         $visitor = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
             ->create(\Magento\Customer\Model\Visitor::class);
         /** @var \Magento\Framework\Stdlib\DateTime $dateTime */
+        // phpcs:ignore
         $visitor->setSessionId(md5(time()) . md5(microtime()))
             ->setLastVisitAt((new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT))
             ->save();
@@ -294,7 +291,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Preparing compare list.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _requireVisitorWithNoProducts()
     {
@@ -302,6 +299,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
         $visitor = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
             ->create(\Magento\Customer\Model\Visitor::class);
 
+        // phpcs:ignore
         $visitor->setSessionId(md5(time()) . md5(microtime()))
             ->setLastVisitAt((new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT))
             ->save();
@@ -318,13 +316,15 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Preparing compare list.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     protected function _requireVisitorWithTwoProducts()
     {
         /** @var $visitor \Magento\Customer\Model\Visitor */
         $visitor = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
             ->create(\Magento\Customer\Model\Visitor::class);
+        // phpcs:ignore
         $visitor->setSessionId(md5(time()) . md5(microtime()))
             ->setLastVisitAt((new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT))
             ->save();
@@ -355,7 +355,8 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * Preparing a compare list.
      *
-     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     protected function _requireCustomerWithTwoProducts()
     {
@@ -387,6 +388,7 @@ class CompareTest extends \Magento\TestFramework\TestCase\AbstractController
         /** @var $visitor \Magento\Customer\Model\Visitor */
         $visitor = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
             ->create(\Magento\Customer\Model\Visitor::class);
+        // phpcs:ignore
         $visitor->setSessionId(md5(time()) . md5(microtime()))
             ->setLastVisitAt((new \DateTime())->format(\Magento\Framework\Stdlib\DateTime::DATETIME_PHP_FORMAT))
             ->save();

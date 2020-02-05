@@ -95,19 +95,13 @@ class DirectoryTest extends \PHPUnit\Framework\TestCase
         )
             ->method('getParents')
             ->will(
-                $this->returnValueMap(
-                    $parents
-                )
+                $this->returnValueMap($parents)
             );
 
         $this->logMock->expects($this->never())
             ->method('add');
 
-        $this->validatorMock->expects(
-            $this->exactly(
-                count($classes)
-            )
-        )
+        $this->validatorMock->expects($this->exactly(count($classes)))
             ->method('validate');
 
         $this->model->getList($path);
@@ -137,16 +131,10 @@ class DirectoryTest extends \PHPUnit\Framework\TestCase
             ['NameSpace1\ClassName2', ['Parent_Class_Name', 'Interface_1', 'Interface_2']]
         ];
 
-        $this->classReaderMock->expects(
-            $this->exactly(
-                count($classes)
-            )
-        )
+        $this->classReaderMock->expects($this->exactly(count($classes)))
             ->method('getParents')
             ->will(
-                $this->returnValueMap(
-                    $parents
-                )
+                $this->returnValueMap($parents)
             );
 
         $this->logMock->expects($this->never())

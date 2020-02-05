@@ -7,10 +7,12 @@ declare(strict_types=1);
 
 namespace Magento\Catalog\Ui\DataProvider\Product;
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\CatalogInventory\Model\Stock\StockItemRepository;
 use Magento\CatalogInventory\Ui\DataProvider\Product\AddQuantityAndStockStatusFieldToCollection;
 use PHPUnit\Framework\TestCase;
 use Magento\TestFramework\Helper\Bootstrap;
+use Magento\CatalogInventory\Api\StockItemCriteriaInterface;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 
 /**

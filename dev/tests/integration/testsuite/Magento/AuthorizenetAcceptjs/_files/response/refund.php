@@ -21,20 +21,20 @@ return [
         'messages' => [
             [
                 'code' => '1',
-                'description' => 'This transaction has been approved.',
-            ],
+                'description' => 'This transaction has been approved.'
+            ]
         ],
         'transHashSha2' => '78BD31BA5BCDF3C3FA3C8373D8DF80EF07FC7E02C3545FCF18A408E2F76ED4F20D'
             . 'FF007221374B576FDD1BFD953B3E5CF37249CEC4C135EEF975F7B478D8452C',
-        'SupplementalDataQualificationIndicator' => 0,
+        'SupplementalDataQualificationIndicator' => 0
     ],
     'messages' => [
         'resultCode' => 'Ok',
         'message' => [
             [
                 'code' => 'I00001',
-                'text' => 'Successful.',
-            ],
-        ],
-    ],
+                'text' => 'Successful.'
+            ]
+        ]
+    ]
 ];

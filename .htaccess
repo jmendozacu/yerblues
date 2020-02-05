@@ -28,9 +28,12 @@
     #AddHandler x-mapp-php5 .php
 
 ############################################
-## default index file
-## Specifies option, to use methods arguments in backtrace or not
+## enable usage of methods arguments in backtrace
+
     SetEnv MAGE_DEBUG_SHOW_ARGS 1
+
+############################################
+## default index file
 
     DirectoryIndex index.php
 
@@ -348,7 +351,7 @@
             Require all denied
         </IfVersion>
     </Files>
-    <Files auth.json>
+    <Files magento_umask>
         <IfVersion < 2.4>
             order allow,deny
             deny from all
@@ -357,7 +360,7 @@
             Require all denied
         </IfVersion>
     </Files>
-    <Files magento_umask>
+    <Files auth.json>
         <IfVersion < 2.4>
             order allow,deny
             deny from all

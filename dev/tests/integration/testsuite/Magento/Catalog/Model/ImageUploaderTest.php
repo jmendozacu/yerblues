@@ -34,6 +34,9 @@ class ImageUploaderTest extends \PHPUnit\Framework\TestCase
      */
     private $mediaDirectory;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
@@ -52,7 +55,10 @@ class ImageUploaderTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testSaveFileToTmpDir()
+    /**
+     * @return void
+     */
+    public function testSaveFileToTmpDir(): void
     {
         $fileName = 'magento_small_image.jpg';
         $tmpDirectory = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::SYS_TMP);
@@ -80,7 +86,7 @@ class ImageUploaderTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture Magento/Catalog/_files/catalog_category_image.php
      * @magentoDataFixture Magento/Catalog/_files/catalog_tmp_category_image.php
      */
-    public function testMoveFileFromTmp()
+    public function testMoveFileFromTmp(): void
     {
         $expectedFilePath = $this->imageUploader->getBasePath() . DIRECTORY_SEPARATOR . 'magento_small_image_1.jpg';
 
@@ -94,8 +100,9 @@ class ImageUploaderTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \Magento\Framework\Exception\LocalizedException
      * @expectedExceptionMessage File validation failed.
+     * @return void
      */
-    public function testSaveFileToTmpDirWithWrongExtension()
+    public function testSaveFileToTmpDirWithWrongExtension(): void
     {
         $fileName = 'text.txt';
         $tmpDirectory = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::SYS_TMP);
@@ -119,8 +126,9 @@ class ImageUploaderTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \Magento\Framework\Exception\LocalizedException
      * @expectedExceptionMessage File validation failed.
+     * @return void
      */
-    public function testSaveFileToTmpDirWithWrongFile()
+    public function testSaveFileToTmpDirWithWrongFile(): void
     {
         $fileName = 'file.gif';
         $tmpDirectory = $this->filesystem->getDirectoryWrite(\Magento\Framework\App\Filesystem\DirectoryList::SYS_TMP);
@@ -153,6 +161,5 @@ class ImageUploaderTest extends \PHPUnit\Framework\TestCase
         /** @var \Magento\Framework\Filesystem\Directory\WriteInterface $mediaDirectory */
         $mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $mediaDirectory->delete('tmp');
-        $mediaDirectory->delete('catalog');
     }
 }

@@ -6,7 +6,6 @@
 
 namespace Magento\Mtf\Util\Command\File;
 
-use Magento\Mtf\Util\Protocol\CurlInterface;
 use Magento\Mtf\Util\Protocol\CurlTransport;
 use Magento\Mtf\Util\Protocol\CurlTransport\WebapiDecorator;
 
@@ -60,6 +59,7 @@ class Log
         );
         $data = $this->transport->read();
         $this->transport->close();
+        // phpcs:ignore Magento2.Security.InsecureFunction
         return unserialize($data);
     }
 

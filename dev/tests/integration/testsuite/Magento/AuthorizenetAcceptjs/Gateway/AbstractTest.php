@@ -12,7 +12,8 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\Area;
 use Magento\Framework\HTTP\ZendClient;
 use Magento\Framework\HTTP\ZendClientFactory;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\ObjectManager;
@@ -30,22 +31,22 @@ abstract class AbstractTest extends TestCase
     protected $objectManager;
 
     /**
-     * @var ZendClient|MockObject
+     * @var ZendClient|MockObject|InvocationMocker
      */
     protected $clientMock;
 
     /**
-     * @var PaymentDataObjectFactory
+     * @var PaymentFactory
      */
     protected $paymentFactory;
 
     /**
-     * @var Zend_Http_Response|MockObject
+     * @var Zend_Http_Response
      */
     protected $responseMock;
 
     /**
-     * @inheritdoc
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function setUp()
     {
@@ -66,19 +67,12 @@ abstract class AbstractTest extends TestCase
         $this->objectManager->addSharedInstance($clientFactoryMock, ZendClientFactory::class);
     }
 
-    /**
-     * @inheritdoc
-     */
     protected function tearDown()
     {
         $this->objectManager->removeSharedInstance(ZendClientFactory::class);
         parent::tearDown();
     }
 
-    /**
-     * @param string $incrementId
-     * @return Order
-     */
     protected function getOrderWithIncrementId(string $incrementId): Order
     {
         /** @var OrderRepositoryInterface $orderRepository */

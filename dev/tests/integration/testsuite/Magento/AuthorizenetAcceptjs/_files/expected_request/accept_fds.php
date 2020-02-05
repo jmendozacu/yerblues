@@ -10,11 +10,11 @@ return [
     'updateHeldTransactionRequest' => [
         'merchantAuthentication' => [
             'name' => 'someusername',
-            'transactionKey' => 'somepassword',
+            'transactionKey' => 'somepassword'
         ],
         'heldTransactionRequest' => [
             'action' => 'approve',
             'refTransId' => '1234',
-        ],
-    ],
+        ]
+    ]
 ];

@@ -10,11 +10,13 @@ use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\Config\ConfigOptionsListConstants;
 use Magento\Framework\Module\ModuleList;
 use Magento\Setup\Model\ConfigModel;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
+/**
+ * Config Set Command
+ */
 class ConfigSetCommand extends AbstractSetupCommand
 {
     /**
@@ -69,7 +71,7 @@ class ConfigSetCommand extends AbstractSetupCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -83,16 +85,12 @@ class ConfigSetCommand extends AbstractSetupCommand
 
             $currentValue = $this->deploymentConfig->get($option->getConfigPath());
             if (($currentValue !== null) && ($inputOptions[$option->getName()] !== null)) {
-                /** @var QuestionHelper $question */
-                $question = $this->getHelper('question');
-                if (!$question->ask(
-                    $input,
-                    $output,
-                    new ConfirmationQuestion(
-                        '<question>Overwrite the existing configuration for '
-                        . $option->getName() . '?[Y/n]</question>'
-                    )
-                )) {
+                $dialog = $this->getHelperSet()->get('question');
+                $question = new Question(
+                    '<question>Overwrite the existing configuration for ' . $option->getName() . '?[Y/n]</question>',
+                    'y'
+                );
+                if (strtolower($dialog->ask($input, $output, $question)) !== 'y') {
                     $inputOptions[$option->getName()] = null;
                 }
             }
@@ -137,7 +135,7 @@ class ConfigSetCommand extends AbstractSetupCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {

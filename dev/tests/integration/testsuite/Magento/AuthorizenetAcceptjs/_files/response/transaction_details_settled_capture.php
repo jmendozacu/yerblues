@@ -11,12 +11,12 @@ return [
         'resultCode' => 'Ok',
         'message' => [
             'code' => 'I00001',
-            'text' => 'Successful',
-        ],
+            'text' => 'Successful'
+        ]
     ],
     'transaction' => [
         'transId' => '4321',
         'transactionType' => 'captureOnlyTransaction',
-        'transactionStatus' => 'settledSuccessfully',
-    ],
+        'transactionStatus' => 'settledSuccessfully'
+    ]
 ];

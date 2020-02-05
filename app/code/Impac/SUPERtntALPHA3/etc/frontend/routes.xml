@@ -4,5 +4,8 @@
         <route id="supertntalpha3" frontName="supertntalpha3">
             <module name="Impac_SUPERtntALPHA3" />
         </route>
+        <route id="valores" frontName="valores">
+            <module name="Impac_Valores" />
+        </route>
     </router>
 </config>

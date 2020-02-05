@@ -15,5 +15,5 @@ $objectManager = Bootstrap::getObjectManager();
 
 /** @var Payment $payment */
 $payment = $objectManager->create(Payment::class);
-$payment->setMethod('authorizenet_acceptjs');
+$payment->setMethod(Config::METHOD);
 $payment->setAuthorizationTransaction(true);

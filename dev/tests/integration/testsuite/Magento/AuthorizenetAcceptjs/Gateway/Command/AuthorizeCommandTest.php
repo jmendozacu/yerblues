@@ -13,9 +13,6 @@ use Magento\Payment\Gateway\Command\CommandPoolInterface;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\Order\Payment\Transaction;
 
-/**
- * Test Authorize command.
- */
 class AuthorizeCommandTest extends AbstractTest
 {
     /**
@@ -23,10 +20,6 @@ class AuthorizeCommandTest extends AbstractTest
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/login someusername
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_key somepassword
      * @magentoConfigFixture default_store payment/authorizenet_acceptjs/trans_signature_key abc
-     *
-     * @magentoDataFixture Magento/AuthorizenetAcceptjs/_files/full_order.php
-     *
-     * @return void
      */
     public function testAuthorizeCommand()
     {
@@ -34,21 +27,23 @@ class AuthorizeCommandTest extends AbstractTest
         $commandPool = $this->objectManager->get('AuthorizenetAcceptjsCommandPool');
         $command = $commandPool->get('authorize');
 
-        $order = $this->getOrderWithIncrementId('100000001');
+        $order = include __DIR__ . '/../../_files/full_order.php';
         $payment = $order->getPayment();
 
         $paymentDO = $this->paymentFactory->create($payment);
 
+        $expectedRequest = include __DIR__ . '/../../_files/expected_request/authorize.php';
         $response = include __DIR__ . '/../../_files/response/authorize.php';
 
-        $this->clientMock->method('setRawData');
+        $this->clientMock->method('setRawData')
+            ->with(json_encode($expectedRequest), 'application/json');
 
         $this->responseMock->method('getBody')
             ->willReturn(json_encode($response));
 
         $command->execute([
             'payment' => $paymentDO,
-            'amount' => 110.00
+            'amount' => 100.00
         ]);
 
         /** @var Payment $payment */

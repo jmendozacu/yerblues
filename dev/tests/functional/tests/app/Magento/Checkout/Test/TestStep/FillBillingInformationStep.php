@@ -143,9 +143,11 @@ class FillBillingInformationStep implements TestStepInterface
             $selectedPaymentMethod->getBillingBlock()->fillBilling($this->billingAddress);
             $billingAddress = $this->billingAddress;
         }
+
         if (isset($this->billingAddressCustomer['added'])) {
             $addressIndex = $this->billingAddressCustomer['added'];
-            $billingAddress = $this->customer->getDataFieldConfig('address')['source']->getAddresses()[$addressIndex];
+            $billingAddress = $this->customer->getDataFieldConfig('address')['source']
+                ->getAddresses()[$addressIndex];
             $address = $this->objectManager->create(
                 \Magento\Customer\Test\Block\Address\Renderer::class,
                 ['address' => $billingAddress, 'type' => 'html_for_select_element']

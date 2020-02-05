@@ -84,7 +84,6 @@ class AddressTest extends \PHPUnit\Framework\TestCase
      * Checks address collection output encoded to json.
      *
      * @magentoDataFixture Magento/Customer/Fixtures/customer_sec_website_2_addresses.php
-     * @magentoDbIsolation enabled
      */
     public function testGetAddressCollectionJson()
     {

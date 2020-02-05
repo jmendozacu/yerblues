@@ -3,8 +3,14 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+
 namespace Magento\User\Controller\Adminhtml\Locks;
 
+/**
+ * Locked users page test.
+ *
+ * @magentoAppArea adminhtml
+ */
 class IndexTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
     /**
@@ -24,7 +30,7 @@ class IndexTest extends \Magento\TestFramework\TestCase\AbstractBackendControlle
             $body
         );
         $this->assertRegExp(
-            '/<td data-column\="username"\s*class\="[^"]*col-name[^"]*col-username[^"]*"\s*>\s*adminUser2\s*<\/td>/',
+            '/<td data-column\="username"\s*class\="[^"]*col-name[^"]*col-username\s*"[^"]*>\s*adminUser2\s*<\/td>/',
             $body
         );
     }

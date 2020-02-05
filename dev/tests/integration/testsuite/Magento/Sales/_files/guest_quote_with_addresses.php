@@ -5,11 +5,16 @@
  */
 declare(strict_types=1);
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
+
 require __DIR__ . '/address_list.php';
 
-\Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea('frontend');
+\Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea(\Magento\Framework\App\Area::AREA_FRONTEND);
 
 $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+/** @var ProductRepositoryInterface $productRepository */
+$productRepository = $objectManager->get(ProductRepositoryInterface::class);
+
 /** @var \Magento\Catalog\Model\Product $product */
 $product = $objectManager->create(\Magento\Catalog\Model\Product::class);
 $product->setTypeId('simple')
@@ -29,8 +34,6 @@ $product->setTypeId('simple')
             'is_in_stock' => 1,
         ]
     )->save();
-
-$productRepository = $objectManager->create(\Magento\Catalog\Api\ProductRepositoryInterface::class);
 $product = $productRepository->get('simple-product-guest-quote');
 
 $addressData = reset($addresses);
@@ -55,7 +58,7 @@ $quote->setCustomerIsGuest(true)
     ->setShippingAddress($shippingAddress)
     ->addProduct($product);
 $quote->getPayment()->setMethod('checkmo');
-$quote->getShippingAddress()->setShippingMethod('flatrate_flatrate')->setCollectShippingRates(1);
+$quote->getShippingAddress()->setShippingMethod('flatrate_flatrate')->setCollectShippingRates(true);
 $quote->collectTotals();
 
 $quoteRepository = $objectManager->create(\Magento\Quote\Api\CartRepositoryInterface::class);

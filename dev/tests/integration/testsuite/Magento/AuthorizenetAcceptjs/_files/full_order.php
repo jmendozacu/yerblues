@@ -6,19 +6,55 @@
 
 declare(strict_types=1);
 
-use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Sales\Model\Order\Address;
 use Magento\Sales\Model\Order\Item;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\TestFramework\Helper\Bootstrap;
 
-require __DIR__ . '/../../../Magento/Sales/_files/default_rollback.php';
 $addressData = include __DIR__ . '/../../../Magento/Sales/_files/address_data.php';
 require __DIR__ . '/../../../Magento/Customer/_files/customer.php';
 
 $objectManager = Bootstrap::getObjectManager();
+
+/** @var $product Product */
+$product = $objectManager->create(Product::class);
+$product->isObjectNew(true);
+$product->setTypeId(Type::TYPE_SIMPLE)
+    ->setId(1)
+    ->setAttributeSetId(4)
+    ->setWebsiteIds([1])
+    ->setName('Simple Product')
+    ->setSku('simple')
+    ->setPrice(10)
+    ->setWeight(1)
+    ->setShortDescription('Short description')
+    ->setTaxClassId(0)
+    ->setDescription('Description with <b>html tag</b>')
+    ->setMetaTitle('meta title')
+    ->setMetaKeyword('meta keyword')
+    ->setMetaDescription('meta description')
+    ->setVisibility(Visibility::VISIBILITY_BOTH)
+    ->setStatus(Status::STATUS_ENABLED)
+    ->setStockData(
+        [
+            'use_config_manage_stock'   => 1,
+            'qty'                       => 100,
+            'is_qty_decimal'            => 0,
+            'is_in_stock'               => 1,
+        ]
+    )->setCanSaveCustomOptions(true)
+    ->setHasOptions(false);
+
+/** @var ProductRepositoryInterface $productRepository */
+$productRepository = $objectManager->create(ProductRepositoryInterface::class);
+$productRepository->save($product);
+
 
 $billingAddress = $objectManager->create(Address::class, ['data' => $addressData]);
 $billingAddress->setAddressType('billing');
@@ -31,35 +67,34 @@ $shippingAddress->setId(null)
     ->setLastname('Doe')
     ->setShippingMethod('flatrate_flatrate');
 
+/** @var Payment $payment */
 $payment = $objectManager->create(Payment::class);
-$payment->setMethod('authorizenet_acceptjs');
-$payment->setAuthorizationTransaction(true);
 $payment->setAdditionalInformation('ccLast4', '1111');
 $payment->setAdditionalInformation('opaqueDataDescriptor', 'mydescriptor');
 $payment->setAdditionalInformation('opaqueDataValue', 'myvalue');
 
 /** @var Item $orderItem */
 $orderItem1 = $objectManager->create(Item::class);
-$orderItem1
-    ->setSku('simple')
-    ->setName('Simple product')
+$orderItem1->setProductId($product->getId())
+    ->setSku($product->getSku())
+    ->setName($product->getName())
     ->setQtyOrdered(1)
-    ->setBasePrice(80)
-    ->setPrice(80)
-    ->setRowTotal(80)
-    ->setProductType('simple');
+    ->setBasePrice($product->getPrice())
+    ->setPrice($product->getPrice())
+    ->setRowTotal($product->getPrice())
+    ->setProductType($product->getTypeId());
 
 /** @var Item $orderItem */
 $orderItem2 = $objectManager->create(Item::class);
-$orderItem2
+$orderItem2->setProductId($product->getId())
     ->setSku('simple2')
-    ->setName('Simple product2')
-    ->setPrice(10)
+    ->setName('Simple product')
+    ->setPrice(100)
     ->setQtyOrdered(2)
-    ->setBasePrice(10)
-    ->setPrice(10)
-    ->setRowTotal(10)
-    ->setProductType('simple');
+    ->setBasePrice($product->getPrice())
+    ->setPrice($product->getPrice())
+    ->setRowTotal($product->getPrice())
+    ->setProductType($product->getTypeId());
 
 $orderAmount = 100;
 $customerEmail = $billingAddress->getEmail();
@@ -84,10 +119,11 @@ $order->setIncrementId('100000001')
     ->setShippingAddress($shippingAddress)
     ->setShippingDescription('Flat Rate - Fixed')
     ->setShippingAmount(10)
-    ->setStoreId($objectManager->get(StoreManagerInterface::class)->getStore()->getId())
+    ->setBaseShippingAmount(10)
+    ->setStoreId(1)
     ->addItem($orderItem1)
     ->addItem($orderItem2)
+    ->setQuoteId(1)
     ->setPayment($payment);
 
-$orderRepository = $objectManager->get(OrderRepositoryInterface::class);
-return $orderRepository->save($order);
+return $order;

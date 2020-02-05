@@ -146,8 +146,12 @@ class AuthorizeCommandTest extends AbstractTest
 
         $paymentDO = $this->paymentFactory->create($payment);
 
+        $expectedRequest = include __DIR__ . '/../../../AuthorizenetAcceptjs/_files/expected_request/authorize.php';
         $response = include __DIR__ . '/../../../AuthorizenetAcceptjs/_files/response/authorize.php';
         $response['transactionResponse']['cavvResultCode'] = '0';
+
+        $this->clientMock->method('setRawData')
+            ->with(json_encode($expectedRequest), 'application/json');
 
         $this->responseMock->method('getBody')
             ->willReturn(json_encode($response));
@@ -155,7 +159,7 @@ class AuthorizeCommandTest extends AbstractTest
         $command->execute(
             [
                 'payment' => $paymentDO,
-                'amount' => 110.00
+                'amount' => 100.00
             ]
         );
 

@@ -3,14 +3,17 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
+declare(strict_types=1);
 
 namespace Magento\Catalog\Model;
 
 use Magento\Backend\Model\Auth;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
-use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\TestFramework\Catalog\Model\ProductLayoutUpdateManager;
+use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\Bootstrap as TestBootstrap;
 use Magento\Framework\Acl\Builder;
 
@@ -19,7 +22,6 @@ use Magento\Framework\Acl\Builder;
  *
  * @magentoDbIsolation enabled
  * @magentoAppIsolation enabled
- *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ProductRepositoryTest extends \PHPUnit\Framework\TestCase
@@ -32,160 +34,72 @@ class ProductRepositoryTest extends \PHPUnit\Framework\TestCase
     private $productRepository;
 
     /**
-     * @var ProductResource
-     */
-    private $productResource;
-
-    /**
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
 
     /**
-     * @var Auth
+     * @var ProductFactory
      */
-    private $authorization;
+    private $productFactory;
 
     /**
-     * @var Builder
+     * @var ProductResource
      */
-    private $aclBuilder;
+    private $productResource;
 
     /**
-     * @inheritdoc
+     * @var ProductLayoutUpdateManager
+     */
+    private $layoutManager;
+
+    /**
+     * Sets up common objects
      */
     protected function setUp()
     {
-        $this->productRepository = Bootstrap::getObjectManager()->get(ProductRepositoryInterface::class);
+        $this->productRepository = Bootstrap::getObjectManager()->create(ProductRepositoryInterface::class);
         $this->searchCriteriaBuilder = Bootstrap::getObjectManager()->get(SearchCriteriaBuilder::class);
-        $this->authorization = Bootstrap::getObjectManager()->get(Auth::class);
-        $this->aclBuilder = Bootstrap::getObjectManager()->get(Builder::class);
+        $this->productFactory = Bootstrap::getObjectManager()->get(ProductFactory::class);
         $this->productResource = Bootstrap::getObjectManager()->get(ProductResource::class);
+        $this->layoutManager = Bootstrap::getObjectManager()->get(ProductLayoutUpdateManager::class);
     }
 
     /**
-     * @inheritdoc
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        $this->authorization->logout();
-        $this->aclBuilder->resetRuntimeAcl();
-    }
-
-    /**
-     * @return Product
-     */
-    private function createProduct(): Product
-    {
-        return Bootstrap::getObjectManager()->create(Product::class);
-    }
-
-    /**
-     * Test Product Repository can change(update) "sku" for given product.
+     * Create new subject instance.
      *
-     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     * @magentoAppArea adminhtml
+     * @return ProductRepositoryInterface
      */
-    public function testUpdateProductSku()
+    private function createRepo(): ProductRepositoryInterface
     {
-        $newSku = 'simple-edited';
-        $productId = $this->productResource->getIdBySku('simple');
-        $initialProduct = $this->createProduct()->load($productId);
-
-        $initialProduct->setSku($newSku);
-        $this->productRepository->save($initialProduct);
-
-        $updatedProduct = $this->createProduct();
-        $updatedProduct->load($productId);
-        self::assertSame($newSku, $updatedProduct->getSku());
+        return Bootstrap::getObjectManager()->create(ProductRepositoryInterface::class);
     }
 
     /**
-     * @magentoDataFixture Magento/Catalog/_files/products_with_multiselect_attribute.php
-     * @dataProvider provideAttributesForUpdate
-     * @param string $code
-     * @param mixed $newValue
-     * @param mixed $expected
-     * @return void
-     * @throws
-     */
-    public function testUpdateAttributes(string $code, $newValue, $expected)
-    {
-        $productId = $this->productResource->getIdBySku('simple_ms_1');
-        $product = $this->createProduct()->load($productId);
-        $product->setData($code, $newValue);
-
-        $this->productRepository->save($product);
-
-        $product = $this->createProduct()->load($productId);
-        $this->assertEquals($expected, $product->getData($code));
-    }
-
-    /**
-     * @return array
-     */
-    public function provideAttributesForUpdate(): array
-    {
-        return [
-            ['description', 'New description', 'New description'],
-            [
-                'multiselect_attribute',
-                ['option_1', 'option_4'],
-                'option_1,option_4'
-            ]
-        ];
-    }
-
-    /**
-     * Check Product Repository able to correctly create product without specified type.
+     * Checks filtering by store_id
      *
-     * @magentoDbIsolation enabled
+     * @magentoDataFixture Magento/Catalog/Model/ResourceModel/_files/product_simple.php
      */
-    public function testCreateWithoutSpecifiedType()
+    public function testFilterByStoreId()
     {
-        /** @var Product $product */
-        $product = Bootstrap::getObjectManager()->get(ProductFactory::class)->create();
-        $product->setName('Simple without specified type');
-        $product->setSku('simple_without_specified_type');
-        $product->setPrice(1.12);
-        $product->setWeight(1.23);
-        $product->setAttributeSetId(4);
-        $product = $this->productRepository->save($product);
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('store_id', '1', 'eq')
+            ->create();
+        $list = $this->productRepository->getList($searchCriteria);
+        $count = $list->getTotalCount();
 
-        self::assertSame('1.1200', $product->getPrice());
-        self::assertSame('1.2300', $product->getWeight());
-        self::assertSame('simple', $product->getTypeId());
-    }
-
-    /**
-     * Tests product repository update should use provided store code.
-     *
-     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
-     */
-    public function testProductUpdate()
-    {
-        $sku = 'simple';
-        $nameUpdated = 'updated';
-        $product = $this->productRepository->get($sku, false, 0);
-        $product->setName($nameUpdated);
-        $this->productRepository->save($product);
-        $product = $this->productRepository->get($sku, false, 0);
-        self::assertEquals(
-            $nameUpdated,
-            $product->getName()
-        );
+        $this->assertGreaterThanOrEqual(1, $count);
     }
 
     /**
      * Check a case when product should be retrieved with different SKU variations.
      *
      * @param string $sku
+     * @return void
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
      * @dataProvider skuDataProvider
      */
-    public function testGetProduct(string $sku)
+    public function testGetProduct(string $sku) : void
     {
         $expectedSku = 'simple';
         $product = $this->productRepository->get($sku);
@@ -204,25 +118,8 @@ class ProductRepositoryTest extends \PHPUnit\Framework\TestCase
         return [
             ['sku' => 'simple'],
             ['sku' => 'Simple'],
-            ['sku' => 'simple ']
+            ['sku' => 'simple '],
         ];
-    }
-
-    /**
-     * Checks filtering by store_id.
-     *
-     * @magentoDataFixture Magento/Catalog/Model/ResourceModel/_files/product_simple.php
-     * @return void
-     */
-    public function testFilterByStoreId()
-    {
-        $searchCriteria = $this->searchCriteriaBuilder
-            ->addFilter('store_id', '1', 'eq')
-            ->create();
-        $list = $this->productRepository->getList($searchCriteria);
-        $count = $list->getTotalCount();
-
-        $this->assertGreaterThanOrEqual(1, $count);
     }
 
     /**
@@ -234,7 +131,7 @@ class ProductRepositoryTest extends \PHPUnit\Framework\TestCase
      * @throws \Magento\Framework\Exception\InputException
      * @throws \Magento\Framework\Exception\StateException
      */
-    public function testSaveProductWithGalleryImage()
+    public function testSaveProductWithGalleryImage(): void
     {
         /** @var $mediaConfig \Magento\Catalog\Model\Product\Media\Config */
         $mediaConfig = Bootstrap::getObjectManager()
@@ -250,10 +147,15 @@ class ProductRepositoryTest extends \PHPUnit\Framework\TestCase
 
         $path = $mediaConfig->getBaseMediaPath() . '/magento_image.jpg';
         $absolutePath = $mediaDirectory->getAbsolutePath() . $path;
-        $product->addImageToMediaGallery($absolutePath, [
+        $product->addImageToMediaGallery(
+            $absolutePath,
+            [
             'image',
             'small_image',
-        ], false, false);
+            ],
+            false,
+            false
+        );
 
         /** @var \Magento\Catalog\Api\ProductRepositoryInterface $productRepository */
         $productRepository = Bootstrap::getObjectManager()
@@ -274,30 +176,61 @@ class ProductRepositoryTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test authorization when saving product's design settings.
+     * Test Product Repository can change(update) "sku" for given product.
      *
      * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDbIsolation enabled
      * @magentoAppArea adminhtml
      */
-    public function testSaveDesign()
+    public function testUpdateProductSku()
     {
-        $product = $this->productRepository->get('simple');
-        $this->authorization->login(TestBootstrap::ADMIN_NAME, TestBootstrap::ADMIN_PASSWORD);
+        $newSku = 'simple-edited';
+        $productId = $this->productResource->getIdBySku('simple');
+        $initialProduct = $this->productFactory->create();
+        $this->productResource->load($initialProduct, $productId);
 
-        //Admin doesn't have access to product's design.
-        $this->aclBuilder->getAcl()->deny(null, 'Magento_Catalog::edit_product_design');
+        $initialProduct->setSku($newSku);
+        $this->productRepository->save($initialProduct);
 
-        $product->setCustomAttribute('custom_design', 2);
-        $product = $this->productRepository->save($product);
-        $this->assertEmpty($product->getCustomAttribute('custom_design'));
+        $updatedProduct = $this->productFactory->create();
+        $this->productResource->load($updatedProduct, $productId);
+        self::assertSame($newSku, $updatedProduct->getSku());
 
-        //Admin has access to products' design.
-        $this->aclBuilder->getAcl()
-            ->allow(null, ['Magento_Catalog::products','Magento_Catalog::edit_product_design']);
+        //clean up.
+        $this->productRepository->delete($updatedProduct);
+    }
 
-        $product->setCustomAttribute('custom_design', 2);
-        $product = $this->productRepository->save($product);
-        $this->assertNotEmpty($product->getCustomAttribute('custom_design'));
-        $this->assertEquals(2, $product->getCustomAttribute('custom_design')->getValue());
+    /**
+     * Test that custom layout file attribute is saved.
+     *
+     * @return void
+     * @throws \Throwable
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDbIsolation enabled
+     * @magentoAppIsolation enabled
+     */
+    public function testCustomLayout(): void
+    {
+        //New valid value
+        $repo = $this->createRepo();
+        $product = $repo->get('simple');
+        $newFile = 'test';
+        $this->layoutManager->setFakeFiles((int)$product->getId(), [$newFile]);
+        $product->setCustomAttribute('custom_layout_update_file', $newFile);
+        $repo->save($product);
+        $repo = $this->createRepo();
+        $product = $repo->get('simple');
+        $this->assertEquals($newFile, $product->getCustomAttribute('custom_layout_update_file')->getValue());
+
+        //Setting non-existent value
+        $newFile = 'does not exist';
+        $product->setCustomAttribute('custom_layout_update_file', $newFile);
+        $caughtException = false;
+        try {
+            $repo->save($product);
+        } catch (LocalizedException $exception) {
+            $caughtException = true;
+        }
+        $this->assertTrue($caughtException);
     }
 }

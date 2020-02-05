@@ -11,7 +11,7 @@ return [
         'resultCode' => 'Ok',
         'message' => [
             'code' => 'I00001',
-            'text' => 'Successful',
-        ],
-    ],
+            'text' => 'Successful'
+        ]
+    ]
 ];

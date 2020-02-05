@@ -18,8 +18,8 @@ return [
             'payment' => [
                 'creditCard' => [
                     'cardNumber' => '1111',
-                    'expirationDate' => 'XXXX',
-                ],
+                    'expirationDate' => 'XXXX'
+                ]
             ],
             'refTransId' => '4321',
             'order' => [
@@ -52,5 +52,5 @@ return [
             ],
             'customerIP' => '127.0.0.1'
         ],
-    ],
+    ]
 ];

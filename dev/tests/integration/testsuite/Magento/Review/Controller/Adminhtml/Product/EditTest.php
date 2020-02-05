@@ -61,7 +61,7 @@ class EditTest extends AbstractBackendController
      * @return void
      * @magentoDataFixture Magento/Review/_files/reviews.php
      */
-    public function testAclHasAccess()
+    public function testAclHasAccess(): void
     {
         $collection = $this->collectionFactory->create();
         $collection->addFilter('detail.nickname', 'Nickname');
@@ -80,7 +80,7 @@ class EditTest extends AbstractBackendController
      *
      * @return void
      */
-    public function testAclNoAccess()
+    public function testAclNoAccess(): void
     {
         // Exclude resource from ACL.
         $this->resource = ['Magento_Review::reviews_all', 'Magento_Review::pending'];

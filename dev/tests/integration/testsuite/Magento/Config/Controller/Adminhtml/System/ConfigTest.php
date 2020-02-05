@@ -8,14 +8,17 @@ namespace Magento\Config\Controller\Adminhtml\System;
 
 use Magento\Config\Controller\Adminhtml\System\Config\Save;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\TestFramework\Helper\Bootstrap;
+use Magento\Framework\App\Request\Http as HttpRequest;
 
 /**
  * @magentoAppArea adminhtml
  */
 class ConfigTest extends \Magento\TestFramework\TestCase\AbstractBackendController
 {
+    /**
+     * Test Configuration page existing.
+     */
     public function testEditAction()
     {
         $this->dispatch('backend/admin/system_config/edit');

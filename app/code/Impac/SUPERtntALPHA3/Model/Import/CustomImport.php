@@ -1,7 +1,7 @@
 <?php
 namespace Impac\SUPERtntALPHA3\Model\Import;
 
-use Impac\SUPERtntALPHA3\\Model\Import\CustomImport\RowValidatorInterface as ValidatorInterface;
+use Impac\SUPERtntALPHA3\Model\Import\CustomImport\RowValidatorInterface as ValidatorInterface;
 use Magento\ImportExport\Model\Import\ErrorProcessing\ProcessingErrorAggregatorInterface;
 
 class CustomImport extends \Magento\ImportExport\Model\Import\Entity\AbstractEntity{

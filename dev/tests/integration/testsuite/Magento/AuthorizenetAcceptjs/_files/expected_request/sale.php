@@ -14,7 +14,7 @@ return [
         ],
         'transactionRequest' => [
             'transactionType' => 'authCaptureTransaction',
-            'amount' => '110.00',
+            'amount' => '100.00',
             'payment' => [
                 'opaqueData' => [
                     'dataDescriptor' => 'mydescriptor',
@@ -29,7 +29,7 @@ return [
             ],
             'poNumber' => null,
             'customer' => [
-                'id' => "1",
+                'id' => 1,
                 'email' => 'admin@example.com',
             ],
             'billTo' => [
@@ -62,5 +62,5 @@ return [
                 ],
             ],
         ],
-    ],
+    ]
 ];

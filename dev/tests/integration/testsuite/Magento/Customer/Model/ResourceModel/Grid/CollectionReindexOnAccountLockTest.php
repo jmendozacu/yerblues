@@ -42,7 +42,7 @@ class CollectionReindexOnAccountLockTest extends TestCase
      * @return mixed
      * @throws NoSuchEntityException
      */
-    private function getCustomerLockExpire()
+    private function getCustomerLockExpire(): ?string
     {
         /** @var CustomerRegistry $customerRegistry */
         $customerRegistry = Bootstrap::getObjectManager()->create(CustomerRegistry::class);
@@ -55,7 +55,7 @@ class CollectionReindexOnAccountLockTest extends TestCase
     /**
      * @return mixed
      */
-    private function getCustomerGridLockExpire()
+    private function getCustomerGridLockExpire(): ?string
     {
         /** @var Collection */
         $gridCustomerCollection = Bootstrap::getObjectManager()->create(Collection::class);

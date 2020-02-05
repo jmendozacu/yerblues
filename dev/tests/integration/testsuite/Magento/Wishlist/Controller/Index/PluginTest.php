@@ -48,7 +48,7 @@ class PluginTest extends AbstractController
      * @magentoDataFixture Magento/Customer/_files/customer.php
      * @magentoAppArea frontend
      */
-    public function testAddActionProductWithInvalidCredentials()
+    public function testAddActionProductWithInvalidCredentials(): void
     {
         $this->getRequest()->setMethod('POST');
         $this->getRequest()->setPostValue(

@@ -12,6 +12,9 @@ use Magento\Eav\Model\Entity\Attribute\Option;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\TestFramework\TestCase\WebapiAbstract;
 
+/**
+ * Class LinkManagementTest for testing ConfigurableProduct to SimpleProduct link functionality
+ */
 class LinkManagementTest extends WebapiAbstract
 {
     const SERVICE_NAME = 'configurableProductLinkManagementV1';
@@ -62,9 +65,6 @@ class LinkManagementTest extends WebapiAbstract
 
             $this->assertArrayHasKey('status', $product);
             $this->assertEquals('1', $product['status']);
-
-            $this->assertArrayHasKey('visibility', $product);
-            $this->assertEquals('1', $product['visibility']);
         }
     }
 

@@ -14,9 +14,6 @@ use Magento\Sales\Model\Order;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\TestCase\WebapiAbstract;
 
-/**
- * Test for Order Get
- */
 class OrderGetTest extends WebapiAbstract
 {
     const RESOURCE_PATH = '/V1/orders';
@@ -35,7 +32,7 @@ class OrderGetTest extends WebapiAbstract
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = Bootstrap::getObjectManager();
     }
@@ -45,7 +42,7 @@ class OrderGetTest extends WebapiAbstract
      *
      * @magentoApiDataFixture Magento/Sales/_files/order.php
      */
-    public function testOrderGet()
+    public function testOrderGet(): void
     {
         $expectedOrderData = [
             'base_subtotal' => '100.0000',
@@ -117,11 +114,35 @@ class OrderGetTest extends WebapiAbstract
     }
 
     /**
+     * Checks order extension attributes.
+     *
+     * @magentoApiDataFixture Magento/Sales/_files/order_with_tax.php
+     */
+    public function testOrderGetExtensionAttributes(): void
+    {
+        $expectedTax = [
+            'code' => 'US-NY-*-Rate 1',
+            'type' => 'shipping'
+        ];
+
+        $result = $this->makeServiceCall(self::ORDER_INCREMENT_ID);
+
+        $appliedTaxes = $result['extension_attributes']['applied_taxes'];
+        self::assertEquals($expectedTax['code'], $appliedTaxes[0]['code']);
+        $appliedTaxes = $result['extension_attributes']['item_applied_taxes'];
+        self::assertEquals($expectedTax['type'], $appliedTaxes[0]['type']);
+        self::assertNotEmpty($appliedTaxes[0]['applied_taxes']);
+        self::assertEquals(true, $result['extension_attributes']['converting_from_quote']);
+        self::assertArrayHasKey('payment_additional_info', $result['extension_attributes']);
+        self::assertNotEmpty($result['extension_attributes']['payment_additional_info']);
+    }
+
+    /**
      * Checks if the order contains product option attributes.
      *
      * @magentoApiDataFixture Magento/Sales/_files/order_with_bundle.php
      */
-    public function testGetOrderWithProductOption()
+    public function testGetOrderWithProductOption(): void
     {
         $expected = [
             'extension_attributes' => [
@@ -177,7 +198,6 @@ class OrderGetTest extends WebapiAbstract
                 'operation' => self::SERVICE_READ_NAME . 'get',
             ],
         ];
-
         return $this->_webApiCall($serviceInfo, ['id' => $order->getId()]);
     }
 
@@ -196,43 +216,5 @@ class OrderGetTest extends WebapiAbstract
         }
 
         return [];
-    }
-
-    /**
-     * @return void
-     * @magentoApiDataFixture Magento/Sales/_files/order_with_tax.php
-     */
-    public function testOrderGetExtensionAttributes()
-    {
-        $expectedTax = [
-            'code' => 'US-NY-*-Rate 1',
-            'type' => 'shipping',
-        ];
-
-        /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->objectManager->create(\Magento\Sales\Model\Order::class);
-        $order->loadByIncrementId(self::ORDER_INCREMENT_ID);
-
-        $serviceInfo = [
-            'rest' => [
-                'resourcePath' => self::RESOURCE_PATH . '/' . $order->getId(),
-                'httpMethod' => \Magento\Framework\Webapi\Rest\Request::HTTP_METHOD_GET,
-            ],
-            'soap' => [
-                'service' => self::SERVICE_READ_NAME,
-                'serviceVersion' => self::SERVICE_VERSION,
-                'operation' => self::SERVICE_READ_NAME . 'get',
-            ],
-        ];
-        $result = $this->_webApiCall($serviceInfo, ['id' => $order->getId()]);
-
-        $appliedTaxes = $result['extension_attributes']['applied_taxes'];
-        $this->assertEquals($expectedTax['code'], $appliedTaxes[0]['code']);
-        $appliedTaxes = $result['extension_attributes']['item_applied_taxes'];
-        $this->assertEquals($expectedTax['type'], $appliedTaxes[0]['type']);
-        $this->assertNotEmpty($appliedTaxes[0]['applied_taxes']);
-        $this->assertEquals(true, $result['extension_attributes']['converting_from_quote']);
-        $this->assertArrayHasKey('payment_additional_info', $result['extension_attributes']);
-        $this->assertNotEmpty($result['extension_attributes']['payment_additional_info']);
     }
 }

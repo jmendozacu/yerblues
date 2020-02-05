@@ -78,7 +78,7 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
         $expectAddedCustomers = 5;
 
         $source = new \Magento\ImportExport\Model\Import\Source\Csv(
-            __DIR__ . '/_files/customers_to_import.csv',
+            __DIR__ . '/_files/customers_with_gender_to_import.csv',
             $this->directoryWrite
         );
 
@@ -112,9 +112,7 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
 
         $existingCustomer = $objectManager->get(
             \Magento\Framework\Registry::class
-        )->registry(
-            '_fixture/Magento_ImportExport_Customer'
-        );
+        )->registry('_fixture/Magento_ImportExport_Customer');
 
         $updatedCustomer = $customers[$existingCustomer->getId()];
 
@@ -135,14 +133,21 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
             $updatedCustomer->getCreatedAt(),
             'Creation date must be changed'
         );
+        $this->assertEquals(
+            $existingCustomer->getGender(),
+            $updatedCustomer->getGender(),
+            'Gender must be changed'
+        );
     }
 
     /**
-     * Test importData() method
+     * Tests importData() method.
      *
      * @magentoDataFixture Magento/Customer/_files/import_export/customer.php
+     *
+     * @return void
      */
-    public function testImportDataWithOneAdditionalColumn()
+    public function testImportDataWithOneAdditionalColumn(): void
     {
         $source = new \Magento\ImportExport\Model\Import\Source\Csv(
             __DIR__ . '/_files/customer_to_import_with_one_additional_column.csv',
@@ -169,11 +174,8 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
         /** @var $objectManager \Magento\TestFramework\ObjectManager */
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
-        $existingCustomer = $objectManager->get(
-            \Magento\Framework\Registry::class
-        )->registry(
-            '_fixture/Magento_ImportExport_Customer'
-        );
+        $existingCustomer = $objectManager->get(\Magento\Framework\Registry::class)
+            ->registry('_fixture/Magento_ImportExport_Customer');
 
         $updatedCustomer = $customers[$existingCustomer->getId()];
 

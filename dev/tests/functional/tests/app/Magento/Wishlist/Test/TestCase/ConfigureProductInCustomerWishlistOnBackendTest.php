@@ -47,6 +47,7 @@ class ConfigureProductInCustomerWishlistOnBackendTest extends AbstractWishlistTe
      * Create customer.
      *
      * @param Customer $customer
+     * @param EnvWhitelist $envWhitelist
      * @return array
      */
     public function __prepare(

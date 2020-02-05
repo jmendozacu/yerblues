@@ -71,7 +71,7 @@ class BackendDecorator implements CurlInterface
         $urls = [];
         $originalUrl = rtrim($_ENV['app_backend_url'], '/') . '/';
         $urls[] = $originalUrl;
-        // It could be the case that the page needs a refresh, so we will try the original one twice
+        // It could be the case that the page needs a refresh, so we will try the original one twice.
         $urls[] = $originalUrl;
         if (strpos($originalUrl, '/index.php') !== false) {
             $url2 = str_replace('/index.php', '', $originalUrl);
@@ -114,6 +114,7 @@ class BackendDecorator implements CurlInterface
             }
         }
         if ($isAuthorized == false) {
+            // phpcs:ignore Magento2.Exceptions.DirectThrow
             throw new \Exception('Admin user cannot be logged in by curl handler!');
         }
     }
@@ -146,6 +147,7 @@ class BackendDecorator implements CurlInterface
         if ($this->formKey) {
             $params['form_key'] = $this->formKey;
         } else {
+            // phpcs:ignore Magento2.Exceptions.DirectThrow
             throw new \Exception(sprintf('Form key is absent! Url: "%s" Response: "%s"', $url, $this->response));
         }
         $this->transport->write($url, http_build_query($params), $method, $headers);

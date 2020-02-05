@@ -114,7 +114,7 @@ class HashGeneratorTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture Magento/Customer/_files/customer.php
      * @return void
      */
-    public function testSwitch()
+    public function testSwitch(): void
     {
         $redirectUrl = "http://domain.com/";
         $fromStoreCode = 'test';
@@ -141,7 +141,6 @@ class HashGeneratorTest extends \PHPUnit\Framework\TestCase
                 "___from_store" => $fromStoreCode
             ]
         );
-
         $this->assertTrue($this->hashGenerator->validateHash($signature, $data));
     }
 
@@ -150,7 +149,7 @@ class HashGeneratorTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture Magento/Customer/_files/customer.php
      * @return void
      */
-    public function testValidateHashWithInCorrectData()
+    public function testValidateHashWithInCorrectData(): void
     {
         $timeStamp = 0;
         $customerId = 8;

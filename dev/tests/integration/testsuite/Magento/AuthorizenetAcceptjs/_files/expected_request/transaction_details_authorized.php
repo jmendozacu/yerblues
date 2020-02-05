@@ -10,8 +10,8 @@ return [
     'getTransactionDetailsRequest' => [
         'merchantAuthentication' => [
             'name' => 'someusername',
-            'transactionKey' => 'somepassword',
+            'transactionKey' => 'somepassword'
         ],
-        'transId' => '1234',
-    ],
+        'transId' => '1234'
+    ]
 ];
