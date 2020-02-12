@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
+    <menu>
+        <add id="Impac_Tntalpha3::parent" title="TNT ALPHA 3" module="Impac_Tntalpha3" sortOrder="10" resource="Impac_Tntalpha3::parent"/>
+        <!-- <add id="Impac_Tntalpha3::index" title="Tntalpha3 Index" module="Impac_Tntalpha3" sortOrder="10" action="tntalpha3/index" resource="Impac_Tntalpha3::index" parent="Impac_Tntalpha3::parent"/>-->
+		<add id="Impac_Tntalpha3::oficinatnt" title="Oficinas TNT" module="Impac_Tntalpha3" sortOrder="20" parent="Impac_Tntalpha3::parent" action="tntalpha3/oficinatnt" resource="Impac_Tntalpha3::oficinatnt"/>
+        <add id="Impac_Tntalpha3::valoresoficina" title="Costos de Envío Oficinas TNT" module="Impac_Tntalpha3" sortOrder="30" parent="Impac_Tntalpha3::parent" action="tntalpha3/valoresoficina" resource="Impac_Tntalpha3::valoresoficina"/>
+    </menu>
+</config>

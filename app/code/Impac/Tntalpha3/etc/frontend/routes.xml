@@ -1,0 +1,7 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/App/etc/routes.xsd">
+    <router id="standard">
+        <route id="tntalpha3" frontName="tntalpha3">
+            <module name="Impac_Tntalpha3" />
+        </route>
+    </router>
+</config>

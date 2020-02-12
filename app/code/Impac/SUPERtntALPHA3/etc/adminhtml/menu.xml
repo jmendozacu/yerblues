@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
-    <menu>
-        <add id="impac_supertntalpha3::core" title="TNT ALPHA 3" module="Impac_SUPERtntALPHA3" sortOrder="10" resource="Impac_SUPERtntALPHA3::sample"/>
-        <add id="impac_supertntalpha3::test" title="Oficinas" module="Impac_SUPERtntALPHA3" sortOrder="10" parent="impac_supertntalpha3::core" action="impac_supertntalpha3/items/" resource="Impac_SUPERtntALPHA3::items"/>
-        <add id="impac_supertntalpha3::valores" title="Valores" module="Impac_SUPERtntALPHA3" sortOrder="20" parent="impac_supertntalpha3::core" action="impac_supertntalpha3/valores/" resource="Impac_SUPERtntALPHA3::valores"/>
-    </menu>
-</config>
