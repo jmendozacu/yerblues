@@ -1,6 +1,6 @@
 {
     "name": "impac/tntalpha3",
-    "description": "Impac Tntalpha3",
+    "description": "Modulo que permite añadir oficinas TNT",
     "require": {
       "php": "~5.6.0|7.0.2|~7.0.6",
       "magento/module-store": "0.74.0-beta4",
@@ -13,6 +13,7 @@
       "magento/module-variable": "0.74.0-beta4",
       "magento/module-media-storage": "0.74.0-beta4",
       "magento/framework": "0.74.0-beta4",
+      "Magento_ImportExport": "0.74.0-beta4",
       "magento/magento-composer-installer": "*"
     },
     "type": "magento2-module",
