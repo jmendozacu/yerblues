@@ -9,7 +9,8 @@
     ],
     "require": {
         "composer/composer": "@alpha",
-        "magento/product-community-edition": "2.3.4"
+        "magento/product-community-edition": "2.3.4",
+        "mageplaza/magento-2-spanish-language-pack": "dev-master"
     },
     "require-dev": {
         "allure-framework/allure-phpunit": "~1.2.0",
